@@ -379,7 +379,6 @@ function showPage(name, btn){
   document.getElementById('page-'+name).classList.add('active');
   btn.classList.add('active');
   if(name==='gallery') loadPhotos();
-  else refreshPage(name);
 }
 async function refreshPage(name){
   try{
@@ -1029,13 +1028,21 @@ function launchConfetti(){
 // INIT
 async function init(){
   await pullCloud();
-  // Pre-load photos if empty
   renderEvents(); renderCards(); renderTimeline(); renderManifest(); loadPhotos();
   buildPicker();
   initCounter();
   if(isBirthdayToday()) setTimeout(launchConfetti,800);
 }
 init();
+
+// Uygulama arka plandan döndüğünde güncel veriyi çek
+document.addEventListener('visibilitychange', async () => {
+  if (!document.hidden) { await pullCloud(); renderEvents(); renderCards(); renderTimeline(); renderManifest(); }
+});
+// Pencere odak aldığında senkron çek
+window.addEventListener('focus', async () => { await pullCloud(); renderEvents(); renderCards(); renderTimeline(); renderManifest(); });
+// 5 dakikada bir otomatik kontrol
+setInterval(pullCloud, 300000);
 </script>
 </body>
 </html>
