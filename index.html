@@ -28,8 +28,8 @@ nav{position:fixed;bottom:0;left:0;right:0;background:rgba(255,255,255,.95);back
 @keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
 .page.active>*{animation:fadeIn .18s ease forwards}
 /* SORT MODE */
-.sort-btn{background:none;border:2px solid var(--blush);color:var(--soft);border-radius:50%;width:30px;height:30px;font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .2s;margin-right:6px}
-.sort-btn.active{background:var(--rose);border-color:var(--rose);color:white}
+.sort-btn{background:none;border:2px solid var(--blush);color:var(--rose);border-radius:50%;width:32px;height:32px;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .2s;margin-right:4px}
+.sort-btn.active{background:var(--rose);border-color:var(--rose);color:white;box-shadow:0 2px 10px rgba(232,116,138,.4)}
 .drag-handle{width:28px;height:28px;flex-shrink:0;display:flex;align-items:center;justify-content:center;color:var(--blush);font-size:20px;cursor:grab;touch-action:none;-webkit-touch-callout:none}
 .sortable-ghost{opacity:0.35;transform:scale(.97)}
 /* HOME */
@@ -190,7 +190,7 @@ nav{position:fixed;bottom:0;left:0;right:0;background:rgba(255,255,255,.95);back
     <h2 class="section-title">
       <span>🗓 Yaklaşan Günler</span>
       <span style="display:flex;align-items:center;gap:6px">
-        <button class="sort-btn" id="eventSortBtn" onclick="toggleSort('event')" title="Sırala">⇅</button>
+        <button class="sort-btn" id="eventSortBtn" onclick="toggleSort('event')" title="Sırala">↕︎</button>
         <button class="add-btn" onclick="openEventModal()">+</button>
       </span>
     </h2>
@@ -203,7 +203,7 @@ nav{position:fixed;bottom:0;left:0;right:0;background:rgba(255,255,255,.95);back
   <div class="page-header" style="position:relative">
     <h1>İlayda Hakkında</h1>
     <span style="position:absolute;right:20px;top:50%;transform:translateY(-50%);display:flex;gap:6px">
-      <button class="sort-btn" id="cardSortBtn" onclick="toggleSort('card')" title="Sırala">⇅</button>
+      <button class="sort-btn" id="cardSortBtn" onclick="toggleSort('card')" title="Sırala">↕︎</button>
       <button class="add-btn" onclick="openNewCardModal()">+</button>
     </span>
   </div>
@@ -214,7 +214,7 @@ nav{position:fixed;bottom:0;left:0;right:0;background:rgba(255,255,255,.95);back
 <div class="page" id="page-gallery">
   <div class="gallery-header" style="position:relative">
     <h1 style="font-family:'Playfair Display',serif;font-style:italic;font-size:26px;color:var(--deep)">Anılarımız</h1>
-    <button class="sort-btn" id="gallerySortBtn" onclick="toggleSort('gallery')" title="Sırala" style="position:absolute;right:20px;top:50%;transform:translateY(-50%)">⇅</button>
+    <button class="sort-btn" id="gallerySortBtn" onclick="toggleSort('gallery')" title="Sırala" style="position:absolute;right:20px;top:50%;transform:translateY(-50%)">↕︎</button>
   </div>
   <div class="gallery-grid" id="galleryGrid"></div>
   <p class="upload-hint">Uzun bas → düzenle/sil &nbsp;|&nbsp; ⇅ → sırala</p>
@@ -225,7 +225,7 @@ nav{position:fixed;bottom:0;left:0;right:0;background:rgba(255,255,255,.95);back
 <div class="page" id="page-timeline">
   <div class="page-header" style="display:flex;flex-direction:column;align-items:center;position:relative">
     <h1 style="font-family:'Playfair Display',serif;font-style:italic;font-size:26px;color:var(--deep)">Zaman Tüneli</h1>
-    <button class="sort-btn" id="timelineSortBtn" onclick="toggleSort('timeline')" title="Sırala" style="position:absolute;right:20px;top:50%;transform:translateY(-50%)">⇅</button>
+    <button class="sort-btn" id="timelineSortBtn" onclick="toggleSort('timeline')" title="Sırala" style="position:absolute;right:20px;top:50%;transform:translateY(-50%)">↕︎</button>
   </div>
   <div class="timeline-container">
     <div class="timeline-line"></div>
@@ -274,7 +274,7 @@ nav{position:fixed;bottom:0;left:0;right:0;background:rgba(255,255,255,.95);back
   <div class="page-header" style="position:relative">
     <h1>Manifest</h1>
     <span style="position:absolute;right:20px;top:50%;transform:translateY(-50%);display:flex;gap:6px">
-      <button class="sort-btn" id="manifestSortBtn" onclick="toggleSort('manifest')" title="Sırala">⇅</button>
+      <button class="sort-btn" id="manifestSortBtn" onclick="toggleSort('manifest')" title="Sırala">↕︎</button>
       <button class="add-btn" onclick="openManifestModal()">+</button>
     </span>
   </div>
