@@ -1,0 +1,1036 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>İlayda için ♥</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Lato:wght@300;400&display=swap" rel="stylesheet">
+<link rel="manifest" href="manifest.json">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="İlayda ♥">
+<meta name="theme-color" content="#e8748a">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="icon" type="image/png" href="icon-192.png">
+<style>
+:root{--rose:#e8748a;--blush:#f7c5ce;--petal:#fdeef1;--deep:#b84d63;--cream:#fff8f9;--text:#5a2d3a;--soft:#c98a96}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{font-family:'Lato',sans-serif;background:var(--cream);color:var(--text);min-height:100vh;overflow-x:hidden}
+.petals-bg{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;overflow:hidden}
+.petal{position:absolute;font-size:1.2rem;opacity:.15;animation:floatPetal linear infinite}
+@keyframes floatPetal{0%{transform:translateY(-20px) rotate(0deg);opacity:0}10%{opacity:.15}90%{opacity:.15}100%{transform:translateY(100vh) rotate(360deg);opacity:0}}
+nav{position:fixed;bottom:0;left:0;right:0;background:rgba(255,255,255,.95);backdrop-filter:blur(20px);border-top:1px solid var(--blush);display:flex;justify-content:space-around;padding:12px 0 20px;z-index:100}
+.nav-btn{display:flex;flex-direction:column;align-items:center;gap:4px;background:none;border:none;cursor:pointer;color:var(--soft);font-family:'Lato',sans-serif;font-size:10px;letter-spacing:.5px;transition:all .3s;padding:4px 8px}
+.nav-btn.active{color:var(--rose)}
+.nav-btn .icon{font-size:20px}
+.page{display:none;min-height:100vh;padding:0 0 90px;position:relative;z-index:1}
+.page.active{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+.page.active>*{animation:fadeIn .35s ease forwards}
+/* HOME */
+.home-header{background:linear-gradient(160deg,#fce4ec 0%,#f8bbd0 50%,#fce4ec 100%);padding:60px 24px 50px;text-align:center;position:relative;overflow:hidden}
+.home-header::before{content:'';position:absolute;top:-50%;left:-50%;width:200%;height:200%;background:radial-gradient(circle at 30% 40%,rgba(255,255,255,.4) 0%,transparent 50%),radial-gradient(circle at 70% 60%,rgba(232,116,138,.15) 0%,transparent 50%)}
+.heart-icon{font-size:50px;display:block;margin-bottom:12px;animation:heartbeat 1.5s ease-in-out infinite}
+@keyframes heartbeat{0%,100%{transform:scale(1)}50%{transform:scale(1.12)}}
+.home-title{font-family:'Playfair Display',serif;font-style:italic;font-size:28px;color:var(--deep);margin-bottom:4px}
+.home-subtitle{font-size:13px;color:var(--soft);letter-spacing:2px;text-transform:uppercase}
+.counter-card{margin:-24px 20px 0;background:white;border-radius:24px;padding:28px 24px;box-shadow:0 8px 40px rgba(232,116,138,.2);text-align:center;position:relative;z-index:2}
+.counter-label{font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--soft);margin-bottom:8px}
+.counter-number{font-family:'Playfair Display',serif;font-size:72px;font-weight:700;line-height:1;background:linear-gradient(135deg,var(--rose),var(--deep));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.counter-unit{font-size:14px;color:var(--soft);margin-top:4px}
+.counter-detail{display:flex;justify-content:center;gap:20px;margin-top:16px;padding-top:16px;border-top:1px solid var(--petal)}
+.counter-detail-item{text-align:center}
+.counter-detail-item .num{font-family:'Playfair Display',serif;font-size:20px;color:var(--deep);font-weight:700}
+.counter-detail-item .lbl{font-size:10px;color:var(--soft);letter-spacing:1px}
+.section{padding:28px 20px 0}
+.section-title{font-family:'Playfair Display',serif;font-size:18px;color:var(--deep);margin-bottom:14px;display:flex;align-items:center;justify-content:space-between}
+.add-btn{background:var(--rose);color:white;border:none;border-radius:50%;width:30px;height:30px;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 10px rgba(232,116,138,.4);flex-shrink:0}
+/* EVENTS */
+.event-card{background:white;border-radius:16px;padding:16px 18px;margin-bottom:10px;display:flex;align-items:center;gap:14px;box-shadow:0 2px 16px rgba(232,116,138,.1);border-left:4px solid var(--blush);transition:transform .15s,background .15s;user-select:none;-webkit-user-select:none}
+.event-card.pressing{transform:scale(.97);background:var(--petal)}
+.event-emoji{font-size:28px}
+.event-info{flex:1}
+.event-name{font-size:15px;color:var(--text);margin-bottom:2px}
+.event-date{font-size:12px;color:var(--soft)}
+.event-countdown{background:linear-gradient(135deg,var(--rose),var(--deep));color:white;border-radius:12px;padding:6px 12px;font-size:12px;text-align:center;min-width:60px}
+.event-countdown .days{font-family:'Playfair Display',serif;font-size:18px;display:block}
+/* INFO CARDS */
+.page-header{padding:50px 24px 24px;background:linear-gradient(160deg,#fce4ec 0%,#fdeef1 100%);text-align:center;position:relative}
+.page-header h1{font-family:'Playfair Display',serif;font-style:italic;font-size:26px;color:var(--deep)}
+.page-header p{font-size:12px;color:var(--soft);margin-top:4px;letter-spacing:1px}
+.cards-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:20px}
+.info-card{background:white;border-radius:20px;padding:20px 14px;text-align:center;box-shadow:0 4px 20px rgba(232,116,138,.12);transition:transform .15s;user-select:none;-webkit-user-select:none}
+.info-card.pressing{transform:scale(.94)}
+.info-card.wide{grid-column:span 2}
+.info-card .card-icon{font-size:32px;margin-bottom:8px;display:block}
+.info-card .card-label{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--soft);margin-bottom:6px}
+.info-card .card-value{font-family:'Playfair Display',serif;font-size:15px;color:var(--text);line-height:1.4}
+.info-card.highlight{background:linear-gradient(135deg,#fce4ec,#fdeef1);border:1px solid var(--blush)}
+.info-card.alert-card{background:linear-gradient(135deg,#fff8e1,#fffde7);border:1px solid #ffe082}
+.info-card.alert-card .card-value{font-size:13px;color:#795548}
+/* GALLERY */
+.gallery-header{padding:50px 24px 24px;background:linear-gradient(160deg,#fce4ec 0%,#fdeef1 100%);text-align:center}
+.gallery-grid{display:grid;grid-template-columns:1fr 1fr;gap:3px;padding:16px 16px 0}
+.gallery-item{position:relative;aspect-ratio:1;overflow:hidden;border-radius:12px;background:var(--petal);display:flex;align-items:center;justify-content:center;user-select:none;-webkit-user-select:none;transition:transform .15s}
+.gallery-item.pressing{transform:scale(.94)}
+.gallery-item img{width:100%;height:100%;object-fit:cover;pointer-events:none}
+.gallery-item .cap-overlay{position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent,rgba(90,45,58,.75));padding:18px 8px 8px}
+.gallery-item .cap-text{color:white;font-size:11px}
+.gallery-placeholder{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;color:var(--blush);font-size:12px;aspect-ratio:1;border:2px dashed var(--blush);border-radius:12px;cursor:pointer}
+.gallery-placeholder .plus{font-size:32px;color:var(--rose)}
+.upload-hint{text-align:center;padding:16px;font-size:12px;color:var(--soft)}
+/* TIMELINE */
+.timeline-container{padding:20px 20px 0;position:relative}
+.timeline-line{position:absolute;left:36px;top:20px;bottom:0;width:2px;background:linear-gradient(to bottom,var(--rose),var(--blush))}
+.timeline-item{display:flex;gap:16px;margin-bottom:24px;user-select:none;-webkit-user-select:none}
+.timeline-dot{width:14px;height:14px;border-radius:50%;background:var(--rose);border:3px solid white;box-shadow:0 0 0 2px var(--rose);flex-shrink:0;margin-top:4px;z-index:1;margin-left:4px}
+.timeline-content{background:white;border-radius:16px;padding:14px 16px;flex:1;box-shadow:0 2px 16px rgba(232,116,138,.1);transition:transform .15s,background .15s}
+.timeline-item.pressing .timeline-content{transform:scale(.97);background:var(--petal)}
+.timeline-date{font-size:10px;color:var(--rose);letter-spacing:1px;text-transform:uppercase;margin-bottom:4px;font-weight:700}
+.timeline-title{font-family:'Playfair Display',serif;font-size:16px;color:var(--text);margin-bottom:4px}
+.timeline-desc{font-size:13px;color:var(--soft);line-height:1.5}
+/* LIGHTBOX */
+.lightbox{display:none;position:fixed;inset:0;background:rgba(0,0,0,.9);z-index:200;align-items:center;justify-content:center;flex-direction:column;padding:20px}
+.lightbox.open{display:flex}
+.lightbox img{max-width:90vw;max-height:75vh;border-radius:12px;object-fit:contain}
+.lightbox-close{position:absolute;top:20px;right:20px;color:white;font-size:32px;cursor:pointer;background:none;border:none}
+.lightbox-caption{color:white;font-family:'Playfair Display',serif;font-style:italic;margin-top:16px;font-size:16px;text-align:center}
+/* MANİFESTO */
+.manifest-item{background:white;border-radius:16px;padding:16px 18px;margin-bottom:10px;display:flex;align-items:center;gap:14px;box-shadow:0 2px 16px rgba(232,116,138,.1);border-left:4px solid var(--blush);user-select:none;-webkit-user-select:none;transition:transform .15s,background .15s}
+.manifest-item.pressing{transform:scale(.97);background:var(--petal)}
+.manifest-item.done{opacity:.5;border-left-color:var(--soft)}
+.manifest-item.done .manifest-text{text-decoration:line-through;color:var(--soft)}
+.manifest-emoji{font-size:26px;flex-shrink:0}
+.manifest-text{font-size:15px;color:var(--text);flex:1;line-height:1.4}
+.manifest-check{width:26px;height:26px;border-radius:50%;border:2px solid var(--blush);display:flex;align-items:center;justify-content:center;flex-shrink:0;cursor:pointer;transition:all .2s;font-size:14px}
+.manifest-check.checked{background:var(--rose);border-color:var(--rose);color:white}
+.manifest-empty{text-align:center;padding:48px 20px;color:var(--soft);font-size:14px}
+
+/* SAYAÇ PAGE */
+.timer-page-header{background:linear-gradient(160deg,#fce4ec 0%,#f8bbd0 50%,#fce4ec 100%);padding:50px 24px 30px;text-align:center}
+.timer-page-header h1{font-family:'Playfair Display',serif;font-style:italic;font-size:26px;color:var(--deep)}
+.timer-wrapper{display:flex;flex-direction:column;align-items:center;padding:40px 20px 20px}
+.timer-label{font-size:13px;letter-spacing:3px;text-transform:uppercase;color:var(--soft);margin-bottom:32px}
+/* Seçim modu — scroll picker */
+.picker-outer{position:relative;width:180px;height:210px;overflow:hidden;border-radius:20px}
+.picker-fade-top{position:absolute;top:0;left:0;right:0;height:70px;background:linear-gradient(to bottom,rgba(255,248,249,1),rgba(255,248,249,0));z-index:2;pointer-events:none}
+.picker-fade-bot{position:absolute;bottom:0;left:0;right:0;height:70px;background:linear-gradient(to top,rgba(255,248,249,1),rgba(255,248,249,0));z-index:2;pointer-events:none}
+.picker-line{position:absolute;left:16px;right:16px;height:2px;background:var(--rose);z-index:3;pointer-events:none}
+.picker-line.top{top:70px}
+.picker-line.bot{top:140px}
+.picker-scroll{height:210px;overflow-y:scroll;scrollbar-width:none;-ms-overflow-style:none}
+.picker-scroll::-webkit-scrollbar{display:none}
+.picker-item{height:70px;display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-size:34px;color:rgba(90,45,58,0.2);transition:all .12s;cursor:pointer}
+.picker-item.selected{color:var(--deep);font-size:48px;font-weight:700}
+.picker-item.near{color:var(--soft);font-size:38px}
+.picker-save-btn{margin-top:28px;background:linear-gradient(135deg,var(--rose),var(--deep));color:white;border:none;border-radius:50px;padding:15px 60px;font-family:'Lato',sans-serif;font-size:15px;letter-spacing:1px;cursor:pointer;box-shadow:0 4px 20px rgba(232,116,138,.4)}
+.picker-save-btn:active{transform:scale(.96)}
+/* Göster modu */
+.counter-view{display:flex;flex-direction:column;align-items:center;width:100%}
+.counter-big{font-family:'Playfair Display',serif;font-size:120px;font-weight:700;line-height:1;background:linear-gradient(135deg,var(--rose),var(--deep));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:4px}
+.counter-sub-label{font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--soft);margin-bottom:40px}
+.counter-controls{display:flex;align-items:center;gap:20px;margin-bottom:32px}
+.counter-pm-btn{background:white;border:2px solid var(--blush);color:var(--rose);border-radius:50%;width:56px;height:56px;font-size:28px;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 12px rgba(232,116,138,.15);transition:transform .12s}
+.counter-pm-btn:active{transform:scale(.91)}
+.counter-edit-btn{background:none;border:none;color:var(--soft);font-size:12px;letter-spacing:1px;font-family:'Lato',sans-serif;cursor:pointer;text-decoration:underline;padding:4px}
+/* BUTTONS */
+.add-memory-btn{display:block;margin:20px auto;background:linear-gradient(135deg,var(--rose),var(--deep));color:white;border:none;border-radius:50px;padding:14px 32px;font-family:'Lato',sans-serif;font-size:14px;letter-spacing:1px;cursor:pointer;box-shadow:0 4px 20px rgba(232,116,138,.4)}
+.add-memory-btn:active{transform:scale(.97)}
+/* MODAL */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(90,45,58,.5);z-index:150;align-items:flex-end;justify-content:center}
+.modal-overlay.open{display:flex}
+.modal{background:white;border-radius:28px 28px 0 0;padding:28px 24px 40px;width:100%;animation:slideUp .3s ease;max-height:90vh;overflow-y:auto}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.modal h3{font-family:'Playfair Display',serif;font-size:20px;color:var(--deep);margin-bottom:20px;text-align:center}
+.modal input,.modal textarea{width:100%;border:1.5px solid var(--blush);border-radius:12px;padding:12px 14px;font-family:'Lato',sans-serif;font-size:14px;color:var(--text);background:var(--petal);margin-bottom:12px;outline:none;resize:none}
+.modal input:focus,.modal textarea:focus{border-color:var(--rose)}
+.modal-btn{width:100%;background:linear-gradient(135deg,var(--rose),var(--deep));color:white;border:none;border-radius:14px;padding:16px;font-family:'Lato',sans-serif;font-size:15px;cursor:pointer;margin-top:8px}
+.modal-cancel{width:100%;background:none;border:none;color:var(--soft);font-size:14px;padding:12px;cursor:pointer;font-family:'Lato',sans-serif}
+/* CTX MENU */
+.ctx-backdrop{display:none;position:fixed;inset:0;z-index:299}
+.ctx-backdrop.open{display:block}
+.ctx-menu{display:none;position:fixed;background:white;border-radius:18px;box-shadow:0 8px 40px rgba(90,45,58,.25);overflow:hidden;z-index:300;min-width:190px;animation:popIn .15s ease}
+.ctx-menu.open{display:block}
+@keyframes popIn{from{opacity:0;transform:scale(.88)}to{opacity:1;transform:scale(1)}}
+.ctx-item{padding:16px 20px;font-size:15px;cursor:pointer;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--petal)}
+.ctx-item:last-child{border-bottom:none}
+.ctx-item:active{background:var(--petal)}
+.ctx-item.danger{color:#e53935}
+/* SYNC */
+#syncIndicator{position:fixed;top:12px;right:12px;z-index:500;background:rgba(232,116,138,.9);color:white;border-radius:20px;padding:6px 12px;font-size:11px;font-family:'Lato',sans-serif;opacity:0;transition:opacity .3s;pointer-events:none}
+</style>
+</head>
+<body>
+<div class="petals-bg" id="petals"></div>
+<div id="syncIndicator">🔄 Güncelleniyor...</div>
+
+<!-- HOME -->
+<div class="page active" id="page-home">
+  <div class="home-header">
+    <span class="heart-icon">♥</span>
+    <h1 class="home-title">İlayda'ya Özel</h1>
+    <p class="home-subtitle">Her şey seninle güzel</p>
+  </div>
+  <div class="counter-card">
+    <p class="counter-label">Birlikte geçen günler</p>
+    <div class="counter-number" id="dayCount">0</div>
+    <p class="counter-unit">gün</p>
+    <div class="counter-detail">
+      <div class="counter-detail-item"><div class="num" id="weekCount">0</div><div class="lbl">Hafta</div></div>
+      <div class="counter-detail-item"><div class="num" id="monthCount">0</div><div class="lbl">Ay</div></div>
+      <div class="counter-detail-item"><div class="num" id="hourCount">0</div><div class="lbl">Saat</div></div>
+    </div>
+  </div>
+  <div class="section">
+    <h2 class="section-title">
+      <span>🗓 Yaklaşan Günler</span>
+      <button class="add-btn" onclick="openEventModal()">+</button>
+    </h2>
+    <div id="eventsContainer"></div>
+  </div>
+</div>
+
+<!-- İLAYDA -->
+<div class="page" id="page-cards">
+  <div class="page-header" style="position:relative">
+    <h1>İlayda Hakkında</h1>
+    <button class="add-btn" onclick="openNewCardModal()" style="position:absolute;right:20px;top:50%;transform:translateY(-50%)">+</button>
+  </div>
+  <div class="cards-grid" id="cardsGrid"></div>
+</div>
+
+<!-- GALERİ -->
+<div class="page" id="page-gallery">
+  <div class="gallery-header">
+    <h1 style="font-family:'Playfair Display',serif;font-style:italic;font-size:26px;color:var(--deep)">Anılarımız</h1>
+  </div>
+  <div class="gallery-grid" id="galleryGrid"></div>
+  <p class="upload-hint">Uzun bas → düzenle/sil &nbsp;|&nbsp; + ile ekle</p>
+  <button class="add-memory-btn" onclick="openGalleryUpload()">+ Fotoğraf Ekle</button>
+</div>
+
+<!-- ZAMAN -->
+<div class="page" id="page-timeline">
+  <div class="page-header" style="display:flex;flex-direction:column;align-items:center">
+    <h1 style="font-family:'Playfair Display',serif;font-style:italic;font-size:26px;color:var(--deep)">Zaman Tüneli</h1>
+  </div>
+  <div class="timeline-container">
+    <div class="timeline-line"></div>
+    <div id="timelineItems"></div>
+  </div>
+  <button class="add-memory-btn" onclick="openMemoryModal()">+ Anı Ekle</button>
+</div>
+
+<!-- SAYAÇ -->
+<div class="page" id="page-timer">
+  <div class="timer-page-header">
+    <h1>Sayaç</h1>
+  </div>
+  <div class="timer-wrapper">
+    <p class="timer-label">Kaç fırın kaldı</p>
+
+    <!-- Seçim modu -->
+    <div id="counterPickMode">
+      <div class="picker-outer">
+        <div class="picker-fade-top"></div>
+        <div class="picker-fade-bot"></div>
+        <div class="picker-line top"></div>
+        <div class="picker-line bot"></div>
+        <div class="picker-scroll" id="pickerScroll"></div>
+      </div>
+      <button class="picker-save-btn" onclick="saveCounter()">Kaydet</button>
+    </div>
+
+    <!-- Göster modu -->
+    <div id="counterViewMode" style="display:none">
+      <div class="counter-view">
+        <div class="counter-big" id="counterDisplay">0</div>
+        <div class="counter-sub-label">fırın</div>
+        <div class="counter-controls">
+          <button class="counter-pm-btn" onclick="adjustCounter(-1)">−</button>
+          <button class="counter-pm-btn" onclick="adjustCounter(1)">+</button>
+        </div>
+        <button class="counter-edit-btn" onclick="editCounter()">Sayıyı değiştir</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MANİFESTO -->
+<div class="page" id="page-manifest">
+  <div class="page-header" style="position:relative">
+    <h1>Manifest</h1>
+    <button class="add-btn" onclick="openManifestModal()" style="position:absolute;right:20px;top:50%;transform:translateY(-50%)">+</button>
+  </div>
+  <div id="manifestList" style="padding:16px 20px 0"></div>
+</div>
+
+<!-- NAV -->
+<nav>
+  <button class="nav-btn active" onclick="showPage('home',this)"><span class="icon">🏠</span><span>Ana</span></button>
+  <button class="nav-btn" onclick="showPage('cards',this)"><span class="icon">💝</span><span>İlayda</span></button>
+  <button class="nav-btn" onclick="showPage('gallery',this)"><span class="icon">📸</span><span>Anılar</span></button>
+  <button class="nav-btn" onclick="showPage('timeline',this)"><span class="icon">✨</span><span>Zaman</span></button>
+  <button class="nav-btn" onclick="showPage('timer',this)"><span class="icon">⏱</span><span>Sayaç</span></button>
+  <button class="nav-btn" onclick="showPage('manifest',this)"><span class="icon">📋</span><span>Manifest</span></button>
+</nav>
+
+<!-- MODALS -->
+<div class="modal-overlay" id="eventModal">
+  <div class="modal">
+    <h3 id="eventModalTitle">Yeni Gün Ekle</h3>
+    <input type="text" id="eventEmoji" placeholder="Emoji (örn: 🎂)" maxlength="4">
+    <input type="text" id="eventName" placeholder="Etkinlik adı">
+    <input type="date" id="eventDate">
+    <button class="modal-btn" onclick="saveEvent()">Kaydet ♥</button>
+    <button class="modal-cancel" onclick="closeEventModal()">İptal</button>
+  </div>
+</div>
+<div class="modal-overlay" id="cardModal">
+  <div class="modal">
+    <h3 id="cardModalTitle">Kartı Düzenle</h3>
+    <input type="text" id="cardIcon" placeholder="Emoji (örn: 🌸)" maxlength="4">
+    <input type="text" id="cardLabel" placeholder="Kart başlığı">
+    <input type="text" id="cardValue" placeholder="Değer">
+    <button class="modal-btn" onclick="saveCard()">Kaydet ♥</button>
+    <button class="modal-cancel" onclick="closeCardModal()">İptal</button>
+  </div>
+</div>
+<div class="modal-overlay" id="memoryModal">
+  <div class="modal">
+    <h3 id="memoryModalTitle">Yeni Anı</h3>
+    <input type="text" id="memoryTitle" placeholder="Başlık">
+    <input type="date" id="memoryDate">
+    <textarea id="memoryDesc" rows="3" placeholder="Bu anıyı anlat..."></textarea>
+    <button class="modal-btn" onclick="saveMemory()">Kaydet ♥</button>
+    <button class="modal-cancel" onclick="closeMemoryModal()">İptal</button>
+  </div>
+</div>
+<div class="modal-overlay" id="galleryModal">
+  <div class="modal">
+    <h3>Fotoğraf Ekle</h3>
+    <input type="text" id="photoCaption" placeholder="Bu fotoğraf nerede çekildi?">
+    <label style="display:block;border:2px dashed var(--blush);border-radius:12px;padding:16px;text-align:center;color:var(--soft);font-size:14px;margin-bottom:12px;cursor:pointer;background:var(--petal)">📷 Fotoğraf Seç<input type="file" id="photoFile" accept="image/*" style="display:none"></label>
+    <button class="modal-btn" onclick="savePhoto()">Ekle ♥</button>
+    <button class="modal-cancel" onclick="closeGalleryModal()">İptal</button>
+  </div>
+</div>
+<div class="modal-overlay" id="photoCaptionModal">
+  <div class="modal">
+    <h3>Açıklamayı Düzenle</h3>
+    <input type="text" id="photoCaptionEdit" placeholder="Fotoğraf açıklaması">
+    <button class="modal-btn" onclick="savePhotoCaption()">Kaydet ♥</button>
+    <button class="modal-cancel" onclick="closePhotoCaptionModal()">İptal</button>
+  </div>
+</div>
+<div class="lightbox" id="lightbox">
+  <button class="lightbox-close" onclick="closeLightbox()">✕</button>
+  <img id="lightboxImg" src="" alt="">
+  <div class="lightbox-caption" id="lightboxCaption"></div>
+</div>
+<!-- MANİFESTO MODAL -->
+<div class="modal-overlay" id="manifestModal">
+  <div class="modal">
+    <h3 id="manifestModalTitle">Yeni Madde</h3>
+    <input type="text" id="manifestEmoji" placeholder="Emoji (isteğe bağlı)" maxlength="4">
+    <input type="text" id="manifestText" placeholder="Yapmak istediğimiz şey...">
+    <button class="modal-btn" onclick="saveManifest()">Ekle ♥</button>
+    <button class="modal-cancel" onclick="closeManifestModal()">İptal</button>
+  </div>
+</div>
+
+<div class="ctx-backdrop" id="ctxBackdrop" onclick="closeCtxMenu()"></div>
+<div class="ctx-menu" id="ctxMenu">
+  <div class="ctx-item" onclick="ctxAction('edit')">✏️ Düzenle</div>
+  <div class="ctx-item danger" onclick="ctxAction('delete')">🗑️ Sil</div>
+</div>
+
+<script>
+// PETALS
+const petalsEl = document.getElementById('petals');
+['🌸','🌹','🌺','💗','✨','🌷'].forEach(e => {
+  for(let i=0;i<3;i++){
+    const p=document.createElement('div');
+    p.className='petal';p.textContent=e;
+    p.style.left=Math.random()*100+'%';
+    p.style.animationDuration=(8+Math.random()*12)+'s';
+    p.style.animationDelay=Math.random()*10+'s';
+    p.style.fontSize=(0.8+Math.random()*1.2)+'rem';
+    petalsEl.appendChild(p);
+  }
+});
+
+// COUNTER
+const startDate = new Date('2025-05-09T00:00:00');
+function updateCounter(){
+  const diff = Date.now() - startDate;
+  document.getElementById('dayCount').textContent = Math.floor(diff/86400000).toLocaleString('tr');
+  document.getElementById('weekCount').textContent = Math.floor(diff/604800000);
+  document.getElementById('monthCount').textContent = Math.floor(diff/2629800000);
+  document.getElementById('hourCount').textContent = Math.floor(diff/3600000).toLocaleString('tr');
+}
+updateCounter();
+setInterval(updateCounter, 60000);
+
+// NAV
+function showPage(name, btn){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('page-'+name).classList.add('active');
+  btn.classList.add('active');
+  if(name==='gallery') loadPhotos();
+  else refreshPage(name);
+}
+async function refreshPage(name){
+  try{
+    const r=await fetch('https://api.jsonbin.io/v3/b/'+SHARED_BIN_ID+'/latest',{headers:{'X-Master-Key':JSONBIN_KEY}});
+    if(!r.ok) return;
+    const d=(await r.json()).record; if(!d) return;
+    if(name==='home'&&d.events){localStorage.setItem('ilayda_events',JSON.stringify(d.events));renderEvents();}
+    if(name==='cards'&&d.cards){localStorage.setItem('ilayda_cards',JSON.stringify(d.cards));renderCards();}
+    if(name==='timeline'&&d.memories){localStorage.setItem('ilayda_memories',JSON.stringify(d.memories));memories=d.memories;renderTimeline();}
+    if(name==='manifest'&&d.manifests){localStorage.setItem('ilayda_manifests',JSON.stringify(d.manifests));manifests=d.manifests;renderManifest();}
+    if(name==='timer'&&d.counter!=null){localStorage.setItem('ilayda_counter',JSON.stringify(d.counter));counterVal=d.counter;if(counterVal>0)showCounterView();}
+  }catch(e){}
+}
+
+// STORAGE + CLOUD SYNC
+// Her iki telefon da aynı sabit BIN_ID'yi kullanır
+const JSONBIN_KEY = '$2a$10$PIe3XWqcFRFaiDOQDJLZFOpHqkIZX2tXbrPQR4Z5nKf7SvjB2f7Su';
+// BIN_ID: ilk pushCloud'da oluşturulur ve kod içine gömülü olarak paylaşılır
+let SHARED_BIN_ID = '69dc0b82856a682189282ba4'; // Sabit — iki telefon da bunu kullanır
+
+const store = {
+  get: k => { try{ return JSON.parse(localStorage.getItem(k)||'null'); }catch(e){ return null; } },
+  set: (k,v) => {
+    try{ localStorage.setItem(k,JSON.stringify(v)); }catch(e){}
+    clearTimeout(store._t);
+    store._t = setTimeout(pushCloud, 1000);
+  },
+  _t: null
+};
+
+function showSync(on){ const el=document.getElementById('syncIndicator'); if(el) el.style.opacity=on?'1':'0'; }
+
+function getCloudData(){
+  return {
+    events: store.get('ilayda_events'),
+    cards: store.get('ilayda_cards'),
+    memories: store.get('ilayda_memories'),
+    fixedMemories: store.get('ilayda_fixed_memories'),
+    counter: store.get('ilayda_counter'),
+    manifests: store.get('ilayda_manifests'),
+    v:'7'
+  };
+}
+
+function applyCloudData(d){
+  if(!d) return;
+  if(d.events){localStorage.setItem('ilayda_events',JSON.stringify(d.events));}
+  if(d.cards){localStorage.setItem('ilayda_cards',JSON.stringify(d.cards));}
+  if(d.memories){localStorage.setItem('ilayda_memories',JSON.stringify(d.memories));memories=d.memories;}
+  if(d.fixedMemories){localStorage.setItem('ilayda_fixed_memories',JSON.stringify(d.fixedMemories));fixedMemories=d.fixedMemories.map(m=>({...m,fixed:true}));}
+  if(d.counter!=null){localStorage.setItem('ilayda_counter',JSON.stringify(d.counter));counterVal=d.counter;}
+  if(d.manifests){localStorage.setItem('ilayda_manifests',JSON.stringify(d.manifests));manifests=d.manifests;}
+}
+
+async function pushCloud(retry=0){
+  if(pushCloud._busy){pushCloud._pending=true;return;}
+  pushCloud._busy=true;
+  showSync(true);
+  try{
+    const gr=await fetch('https://api.jsonbin.io/v3/b/'+SHARED_BIN_ID+'/latest',{headers:{'X-Master-Key':JSONBIN_KEY}});
+    let rec={};
+    if(gr.ok){const gj=await gr.json();rec=gj.record||{};}
+    const local=getCloudData();
+    rec.events=local.events; rec.cards=local.cards; rec.memories=local.memories;
+    rec.fixedMemories=local.fixedMemories; rec.counter=local.counter;
+    rec.manifests=local.manifests; rec.v=local.v;
+    // rec.photos'a dokunmuyoruz — savePhotosToCloud yönetiyor
+    const r=await fetch('https://api.jsonbin.io/v3/b/'+SHARED_BIN_ID,{
+      method:'PUT',headers:{'Content-Type':'application/json','X-Master-Key':JSONBIN_KEY},
+      body:JSON.stringify(rec)
+    });
+    if(!r.ok&&retry<2) setTimeout(()=>pushCloud(retry+1),2000);
+  }catch(e){if(retry<2)setTimeout(()=>pushCloud(retry+1),2000);}
+  showSync(false);
+  pushCloud._busy=false;
+  if(pushCloud._pending){pushCloud._pending=false;setTimeout(pushCloud,500);}
+}
+pushCloud._busy=false; pushCloud._pending=false;
+
+async function pullCloud(){
+  showSync(true);
+  try{
+    const r = await fetch('https://api.jsonbin.io/v3/b/'+SHARED_BIN_ID+'/latest',{
+      headers:{'X-Master-Key':JSONBIN_KEY}
+    });
+    if(!r.ok){ showSync(false); return false; }
+    const j = await r.json();
+    applyCloudData(j.record);
+    showSync(false);
+    return true;
+  }catch(e){ showSync(false); return false; }
+}
+const DATA_VERSION = '7';
+if(store.get('ilayda_data_version') !== DATA_VERSION){
+  localStorage.removeItem('ilayda_events');
+  localStorage.removeItem('ilayda_cards');
+  localStorage.removeItem('ilayda_memories');
+  localStorage.removeItem('ilayda_fixed_memories');
+  localStorage.removeItem('ilayda_manifests');
+  store.set('ilayda_data_version', DATA_VERSION);
+}
+
+// LONG PRESS
+function addLongPress(el, cb){
+  let timer, sx, sy;
+  const start = e => {
+    sx = e.touches?e.touches[0].clientX:e.clientX;
+    sy = e.touches?e.touches[0].clientY:e.clientY;
+    el.classList.add('pressing');
+    timer = setTimeout(()=>{ el.classList.remove('pressing'); navigator.vibrate&&navigator.vibrate(40); cb(e); }, 500);
+  };
+  const move = e => {
+    const x=e.touches?e.touches[0].clientX:e.clientX;
+    const y=e.touches?e.touches[0].clientY:e.clientY;
+    if(Math.abs(x-sx)>10||Math.abs(y-sy)>10) cancel();
+  };
+  const cancel = () => { clearTimeout(timer); el.classList.remove('pressing'); };
+  el.addEventListener('touchstart',start,{passive:true});
+  el.addEventListener('touchmove',move,{passive:true});
+  el.addEventListener('touchend',cancel);
+  el.addEventListener('mousedown',start);
+  el.addEventListener('mousemove',move);
+  el.addEventListener('mouseup',cancel);
+  el.addEventListener('mouseleave',cancel);
+  el.addEventListener('contextmenu',e=>e.preventDefault());
+}
+
+// CTX MENU
+let ctxTarget = null;
+let allMemories = [];
+function openCtxMenu(e, type, index){
+  ctxTarget = {type, index};
+  const menu = document.getElementById('ctxMenu');
+  const src = e.changedTouches?e.changedTouches[0]:e.touches?e.touches[0]:e;
+  const x = Math.min(src.clientX||80, window.innerWidth-210);
+  const y = Math.min(src.clientY||80, window.innerHeight-130);
+  menu.style.left=x+'px'; menu.style.top=y+'px';
+  menu.classList.add('open');
+  document.getElementById('ctxBackdrop').classList.add('open');
+}
+function closeCtxMenu(){
+  document.getElementById('ctxMenu').classList.remove('open');
+  document.getElementById('ctxBackdrop').classList.remove('open');
+  ctxTarget = null;
+}
+function ctxAction(action){
+  if(!ctxTarget) return;
+  const {type, index} = ctxTarget;
+  closeCtxMenu();
+  if(type==='event'){
+    if(action==='edit') openEventModal(index);
+    else{ const evs=getEvents(); evs.splice(index,1); store.set('ilayda_events',evs); renderEvents(); }
+  } else if(type==='card'){
+    if(action==='edit') openCardModal(index);
+    else{ const cards=getCards(); cards.splice(index,1); store.set('ilayda_cards',cards); renderCards(); }
+  } else if(type==='memory'){
+    if(action==='edit') openMemoryModal(index);
+    else{
+      allMemories.splice(index,1);
+      const nf=allMemories.filter(m=>m.fixed);
+      const nu=allMemories.filter(m=>!m.fixed);
+      fixedMemories.length=0; nf.forEach(m=>fixedMemories.push(m));
+      memories=nu;
+      store.set('ilayda_memories',memories);
+      store.set('ilayda_fixed_memories',fixedMemories.map(m=>({...m})));
+      renderTimeline();
+    }
+  } else if(type==='manifest'){
+    if(action==='edit') openManifestModal(index);
+    else{ manifests.splice(index,1); store.set('ilayda_manifests',manifests); renderManifest(); }
+  } else if(type==='photo'){
+    if(action==='edit') openPhotoCaptionModal(index);
+    else{
+      photos.splice(index,1);
+      savePhotosToCloud(photos);
+      renderGallery();
+    }
+  }
+}
+// MANİFESTO
+let manifests = store.get('ilayda_manifests') || [];
+
+function renderManifest(){
+  const list = document.getElementById('manifestList');
+  if(!list) return;
+  if(manifests.length===0){
+    list.innerHTML='<div class="manifest-empty">Henüz hiçbir şey yok 🌸<br>+ ile ekleyin!</div>';
+    return;
+  }
+  list.innerHTML='';
+  manifests.forEach((m,i)=>{
+    const item=document.createElement('div');
+    item.className='manifest-item'+(m.done?' done':'');
+    item.innerHTML=
+      '<span class="manifest-emoji">'+(m.emoji||'✨')+'</span>'+
+      '<span class="manifest-text">'+m.text+'</span>'+
+      '<div class="manifest-check'+(m.done?' checked':'')+'" onclick="toggleManifest('+i+')">'+(m.done?'✓':'')+'</div>';
+    addLongPress(item, e=>openCtxMenu(e,'manifest',i));
+    list.appendChild(item);
+  });
+}
+
+function toggleManifest(i){
+  manifests[i].done=!manifests[i].done;
+  store.set('ilayda_manifests',manifests);
+  renderManifest();
+}
+
+let editManifestIdx=null;
+function openManifestModal(idx=null){
+  editManifestIdx=idx;
+  document.getElementById('manifestModalTitle').textContent=idx!==null?'Düzenle':'Yeni Madde';
+  if(idx!==null){
+    document.getElementById('manifestEmoji').value=manifests[idx].emoji||'';
+    document.getElementById('manifestText').value=manifests[idx].text;
+  } else {
+    document.getElementById('manifestEmoji').value='';
+    document.getElementById('manifestText').value='';
+  }
+  document.getElementById('manifestModal').classList.add('open');
+}
+function closeManifestModal(){ document.getElementById('manifestModal').classList.remove('open'); }
+function saveManifest(){
+  const emoji=document.getElementById('manifestEmoji').value.trim();
+  const text=document.getElementById('manifestText').value.trim();
+  if(!text) return;
+  if(editManifestIdx!==null){
+    manifests[editManifestIdx].emoji=emoji;
+    manifests[editManifestIdx].text=text;
+  } else {
+    manifests.push({emoji,text,done:false});
+  }
+  store.set('ilayda_manifests',manifests);
+  renderManifest();
+  closeManifestModal();
+}
+
+
+
+// EVENTS
+const defaultEvents = [
+  {emoji:'🎂', name:"İlayda'nın Doğum Günü", date:'2026-04-11'},
+  {emoji:'☕', name:'First Date', date:'2025-05-31'},
+  {emoji:'❤️', name:'Yıldönümümüz', date:'2026-05-09'},
+  {emoji:'🙂', name:'İlk Açılma Girişimi', date:'2025-07-19'},
+];
+function getEvents(){ return store.get('ilayda_events') || JSON.parse(JSON.stringify(defaultEvents)); }
+function daysUntil(dateStr){
+  const t=new Date(dateStr), n=new Date();
+  n.setHours(0,0,0,0); t.setHours(0,0,0,0);
+  let d=Math.ceil((t-n)/86400000);
+  if(d<0){ t.setFullYear(t.getFullYear()+1); d=Math.ceil((t-n)/86400000); }
+  return d;
+}
+function renderEvents(){
+  const evs=getEvents();
+  const container=document.getElementById('eventsContainer');
+  container.innerHTML='';
+  evs.forEach((ev,i)=>{
+    const days=daysUntil(ev.date);
+    const d=new Date(ev.date);
+    const upcoming=new Date(d); upcoming.setFullYear(new Date().getFullYear()); upcoming.setHours(0,0,0,0);
+    const today=new Date(); today.setHours(0,0,0,0);
+    if(upcoming<today) upcoming.setFullYear(upcoming.getFullYear()+1);
+    const isBday = ev.date.slice(5)==='04-11';
+    const dateLabel = isBday
+      ? upcoming.toLocaleDateString('tr-TR',{day:'numeric',month:'long'})
+      : new Date(ev.date).toLocaleDateString('tr-TR',{day:'numeric',month:'long',year:'numeric'});
+    const card=document.createElement('div');
+    card.className='event-card';
+    card.innerHTML='<span class="event-emoji">'+ev.emoji+'</span><div class="event-info"><div class="event-name">'+ev.name+'</div><div class="event-date">'+dateLabel+'</div></div><div class="event-countdown"><span class="days">'+days+'</span><span>gün</span></div>';
+    addLongPress(card, e=>openCtxMenu(e,'event',i));
+    container.appendChild(card);
+  });
+}
+let editEventIdx=null;
+function openEventModal(idx=null){
+  editEventIdx=idx;
+  document.getElementById('eventModalTitle').textContent=idx!==null?'Etkinliği Düzenle':'Yeni Gün Ekle';
+  if(idx!==null){ const ev=getEvents()[idx]; document.getElementById('eventEmoji').value=ev.emoji; document.getElementById('eventName').value=ev.name; document.getElementById('eventDate').value=ev.date; }
+  else{ document.getElementById('eventEmoji').value=''; document.getElementById('eventName').value=''; document.getElementById('eventDate').value=''; }
+  document.getElementById('eventModal').classList.add('open');
+}
+function closeEventModal(){ document.getElementById('eventModal').classList.remove('open'); }
+function saveEvent(){
+  const emoji=document.getElementById('eventEmoji').value.trim()||'📅';
+  const name=document.getElementById('eventName').value.trim();
+  const date=document.getElementById('eventDate').value;
+  if(!name||!date) return;
+  const evs=getEvents();
+  if(editEventIdx!==null) evs[editEventIdx]={emoji,name,date};
+  else evs.push({emoji,name,date});
+  store.set('ilayda_events',evs); renderEvents(); closeEventModal();
+}
+
+// CARDS
+const defaultCards = [
+  {icon:'🌸', label:'En Sevdiği Çiçek', value:'Manitasının aldığı çiçek 💐', cls:'highlight'},
+  {icon:'☕', label:'Kahve Tercihi', value:'Türk Kahvesi (Sade)', cls:'highlight'},
+  {icon:'🏟️', label:'Tuttuğu Takım(lar)', value:'Fenerbahçe, Beşiktaş', cls:''},
+  {icon:'🎵', label:'Şarkımız', value:'Sana Doğru - Ajda Pekkan', cls:''},
+  {icon:'🍮', label:'En Sevdiği Tatlı', value:'Tramissyou', cls:'highlight'},
+  {icon:'🍽️', label:'En Sevdiği Yemek', value:'Sushi', cls:'highlight'},
+  {icon:'🎶', label:'Sevdiği Sanatçılar', value:"Soner Sarıkabadayı, 90'lı Pop Sanatçıları", cls:''},
+  {icon:'⚠️', label:'Önemli Not', value:'-Küçükken mısıra alerjisi vardı -de/da ekinin yazımına çok dikkat ediniz', cls:'alert-card'},
+  {icon:'🎂', label:'Doğum Günü', value:'11 Nisan', cls:'highlight wide'},
+  {icon:'♈', label:'Burç', value:'Koç', cls:'highlight'},
+];
+function getCards(){ return store.get('ilayda_cards') || JSON.parse(JSON.stringify(defaultCards)); }
+function renderCards(){
+  const cards=getCards();
+  const grid=document.getElementById('cardsGrid');
+  grid.innerHTML='';
+  cards.forEach((c,i)=>{
+    const div=document.createElement('div');
+    div.className='info-card '+c.cls;
+    div.innerHTML='<span class="card-icon">'+c.icon+'</span><div class="card-label">'+c.label+'</div><div class="card-value">'+c.value+'</div>';
+    addLongPress(div, e=>openCtxMenu(e,'card',i));
+    grid.appendChild(div);
+  });
+}
+let editCardIdx=null, isNewCard=false;
+function openNewCardModal(){
+  isNewCard=true; editCardIdx=null;
+  document.getElementById('cardModalTitle').textContent='Yeni Kart Ekle';
+  document.getElementById('cardIcon').value='';
+  document.getElementById('cardLabel').value='';
+  document.getElementById('cardValue').value='';
+  document.getElementById('cardModal').classList.add('open');
+}
+function openCardModal(idx){
+  isNewCard=false; editCardIdx=idx;
+  document.getElementById('cardModalTitle').textContent='Kartı Düzenle';
+  const c=getCards()[idx];
+  document.getElementById('cardIcon').value=c.icon;
+  document.getElementById('cardLabel').value=c.label;
+  document.getElementById('cardValue').value=c.value==='—'?'':c.value;
+  document.getElementById('cardModal').classList.add('open');
+}
+function closeCardModal(){ document.getElementById('cardModal').classList.remove('open'); }
+function saveCard(){
+  const icon=document.getElementById('cardIcon').value.trim()||'✨';
+  const label=document.getElementById('cardLabel').value.trim();
+  const val=document.getElementById('cardValue').value.trim()||'—';
+  if(!label) return;
+  const cards=getCards();
+  if(isNewCard) cards.push({icon,label,value:val,cls:'highlight'});
+  else{ cards[editCardIdx].icon=icon; cards[editCardIdx].label=label; cards[editCardIdx].value=val; }
+  store.set('ilayda_cards',cards); renderCards(); closeCardModal();
+}
+
+// MEMORIES
+let memories = store.get('ilayda_memories') || [];
+const defaultFixedMemories = [
+  {date:'9 Mayıs 2025', title:'İlk Günümüz ❤️', desc:'Her şeyin başladığı gün.', fixed:true},
+  {date:'31 Mayıs 2025', title:'First Date', desc:'', fixed:true},
+  {date:'28 Haziran 2025', title:'İlk Konserimiz (Soner Sarıkabadayı)', desc:'', fixed:true},
+  {date:'19 Temmuz 2025', title:'İlk Açılma Girişimi', desc:'Not: 15 Temmuzda açılma girişimi olayazdı ancak ortam şartları ve duyuldu yediğim için o gün açılamadım', fixed:true},
+  {date:'24 Temmuz 2025', title:'İlk El Ele Tutuştuğumuz Gün', desc:'Konum: Kıyı Otopark', fixed:true},
+  {date:'31 Temmuz 2025', title:'Sevgili Olduğumuz Gün❤️', desc:'Malumun ilanı....Ajda Konseri öncesi🙂', fixed:true},
+  {date:'4 Nisan 2026', rawDate:'2026-04-04', title:'İlk Tatilimiz', desc:'Konum: Kapadokya', fixed:true},
+];
+let fixedMemories = store.get('ilayda_fixed_memories')
+  ? store.get('ilayda_fixed_memories').map(m=>({...m,fixed:true}))
+  : defaultFixedMemories.map(m=>({...m}));
+
+function renderTimeline(){
+  const container=document.getElementById('timelineItems');
+  container.innerHTML='';
+  allMemories=[...fixedMemories,...memories];
+  allMemories.forEach((m,i)=>{
+    const item=document.createElement('div');
+    item.className='timeline-item';
+    item.innerHTML='<div class="timeline-dot"></div><div class="timeline-content"><div class="timeline-date">'+m.date+'</div><div class="timeline-title">'+m.title+'</div>'+(m.desc?'<div class="timeline-desc">'+m.desc+'</div>':'')+'</div>';
+    addLongPress(item, e=>openCtxMenu(e,'memory',i));
+    container.appendChild(item);
+  });
+}
+let editMemoryIdx=null;
+function openMemoryModal(idx=null){
+  editMemoryIdx=idx;
+  document.getElementById('memoryModalTitle').textContent=idx!==null?'Anıyı Düzenle':'Yeni Anı';
+  if(idx!==null){
+    const m=allMemories[idx];
+    document.getElementById('memoryTitle').value=m.title;
+    document.getElementById('memoryDate').value=m.rawDate||'';
+    document.getElementById('memoryDesc').value=m.desc||'';
+  } else {
+    document.getElementById('memoryTitle').value='';
+    document.getElementById('memoryDate').value=new Date().toISOString().split('T')[0];
+    document.getElementById('memoryDesc').value='';
+  }
+  document.getElementById('memoryModal').classList.add('open');
+}
+function closeMemoryModal(){ document.getElementById('memoryModal').classList.remove('open'); }
+function saveMemory(){
+  const title=document.getElementById('memoryTitle').value.trim();
+  const rawDate=document.getElementById('memoryDate').value;
+  const desc=document.getElementById('memoryDesc').value.trim();
+  if(!title) return;
+  if(editMemoryIdx!==null){
+    const existing=allMemories[editMemoryIdx];
+    const dateLabel=rawDate?new Date(rawDate).toLocaleDateString('tr-TR',{day:'numeric',month:'long',year:'numeric'}):existing.date;
+    const updated={...existing,date:dateLabel,rawDate:rawDate||existing.rawDate,title,desc};
+    if(existing.fixed){
+      const fi=fixedMemories.findIndex(f=>f===existing||(f.date===existing.date&&f.title===existing.title));
+      if(fi!==-1) fixedMemories[fi]=updated;
+      store.set('ilayda_fixed_memories',fixedMemories.map(m=>({...m})));
+    } else {
+      const ui=editMemoryIdx-fixedMemories.length;
+      memories[ui]=updated;
+      store.set('ilayda_memories',memories);
+    }
+  } else {
+    if(!rawDate) return;
+    const d=new Date(rawDate).toLocaleDateString('tr-TR',{day:'numeric',month:'long',year:'numeric'});
+    memories.push({date:d,rawDate,title,desc});
+    store.set('ilayda_memories',memories);
+  }
+  renderTimeline(); closeMemoryModal();
+}
+
+// CLOUDINARY CONFIG
+const CLOUD_NAME = 'duauekhzf';
+const UPLOAD_PRESET = 'Ilayda_App';
+
+// GALLERY
+let photos = [];
+
+async function loadPhotos(){
+  try{
+    const r=await fetch('https://api.jsonbin.io/v3/b/'+SHARED_BIN_ID+'/latest',{headers:{'X-Master-Key':JSONBIN_KEY}});
+    if(r.ok){
+      const j=await r.json();
+      if(j.record&&j.record.photos&&j.record.photos.length>0){
+        photos=j.record.photos;
+        localStorage.setItem('ilayda_photos',JSON.stringify(photos));
+      } else {
+        photos=JSON.parse(localStorage.getItem('ilayda_photos')||'[]');
+      }
+    } else {
+      photos=JSON.parse(localStorage.getItem('ilayda_photos')||'[]');
+    }
+  }catch(e){ photos=JSON.parse(localStorage.getItem('ilayda_photos')||'[]'); }
+  renderGallery();
+}
+
+async function savePhotosToCloud(list){
+  localStorage.setItem('ilayda_photos', JSON.stringify(list));
+  if(savePhotosToCloud._busy){ savePhotosToCloud._pending=list; return; }
+  savePhotosToCloud._busy = true;
+  try{
+    const gr=await fetch('https://api.jsonbin.io/v3/b/'+SHARED_BIN_ID+'/latest',{headers:{'X-Master-Key':JSONBIN_KEY}});
+    let rec={};
+    if(gr.ok){const gj=await gr.json();rec=gj.record||{};}
+    rec.photos = list;
+    await fetch('https://api.jsonbin.io/v3/b/'+SHARED_BIN_ID,{
+      method:'PUT',headers:{'Content-Type':'application/json','X-Master-Key':JSONBIN_KEY},
+      body:JSON.stringify(rec)
+    });
+  }catch(e){}
+  savePhotosToCloud._busy = false;
+  if(savePhotosToCloud._pending){
+    const p=savePhotosToCloud._pending; savePhotosToCloud._pending=null;
+    await savePhotosToCloud(p);
+  }
+}
+savePhotosToCloud._busy=false; savePhotosToCloud._pending=null;
+
+function renderGallery(){
+  const grid=document.getElementById('galleryGrid');
+  if(!grid) return;
+  grid.innerHTML='';
+  if(photos.length===0){
+    const e=document.createElement('div');
+    e.style.cssText='grid-column:span 2;text-align:center;padding:40px 20px;color:var(--soft);font-size:13px;';
+    e.innerHTML='Henüz fotoğraf yok 🌸<br>+ ile ekleyin!';
+    grid.appendChild(e);
+  }
+  photos.forEach((p,i)=>{
+    const item=document.createElement('div');
+    item.className='gallery-item';
+    item.innerHTML='<img src="'+p.src+'" loading="lazy"><div class="cap-overlay"><span class="cap-text">'+p.caption+'</span></div>';
+    let lp=false;
+    addLongPress(item,e2=>{lp=true;setTimeout(()=>lp=false,400);openCtxMenu(e2,'photo',i);});
+    item.addEventListener('click',()=>{if(!lp)openLightbox(i);});
+    grid.appendChild(item);
+  });
+  const ph=document.createElement('div');
+  ph.className='gallery-placeholder';
+  ph.innerHTML='<span class="plus">+</span><span>Fotoğraf Ekle</span>';
+  ph.onclick=openGalleryUpload;
+  grid.appendChild(ph);
+}
+
+function openGalleryUpload(){
+  document.getElementById('photoCaption').value='';
+  document.getElementById('photoFile').value='';
+  document.getElementById('galleryModal').classList.add('open');
+}
+function closeGalleryModal(){document.getElementById('galleryModal').classList.remove('open');}
+
+async function savePhoto(){
+  const file=document.getElementById('photoFile').files[0];
+  const caption=document.getElementById('photoCaption').value.trim()||'Güzel bir an';
+  if(!file){alert('Önce fotoğraf seç!');return;}
+  const btn=document.querySelector('#galleryModal .modal-btn');
+  btn.textContent='Yükleniyor...';btn.disabled=true;
+  try{
+    const fd=new FormData();
+    fd.append('file',file);fd.append('upload_preset',UPLOAD_PRESET);fd.append('folder','ilayda_app');
+    const res=await fetch('https://api.cloudinary.com/v1_1/'+CLOUD_NAME+'/image/upload',{method:'POST',body:fd});
+    const data=await res.json();
+    if(data.secure_url){
+      // Cloud'dan güncel listeyi çek, ekle, geri yaz
+      let cur=[];
+      try{
+        const cr=await fetch('https://api.jsonbin.io/v3/b/'+SHARED_BIN_ID+'/latest',{headers:{'X-Master-Key':JSONBIN_KEY}});
+        if(cr.ok){const cj=await cr.json();cur=(cj.record&&cj.record.photos)?[...cj.record.photos]:[];}
+      }catch(e){cur=JSON.parse(localStorage.getItem('ilayda_photos')||'[]');}
+      cur.push({src:data.secure_url,caption,public_id:data.public_id});
+      await savePhotosToCloud(cur);
+      photos=cur;
+      renderGallery();
+      closeGalleryModal();
+    } else {
+      alert('Yükleme hatası: '+(data.error&&data.error.message?data.error.message:'Hata'));
+    }
+  }catch(e){alert('Hata: '+e.message);}
+  btn.textContent='Ekle ♥';btn.disabled=false;
+}
+
+let editPhotoIdx=null;
+function openPhotoCaptionModal(idx){
+  editPhotoIdx=idx;
+  document.getElementById('photoCaptionEdit').value=photos[idx].caption;
+  document.getElementById('photoCaptionModal').classList.add('open');
+}
+function closePhotoCaptionModal(){document.getElementById('photoCaptionModal').classList.remove('open');}
+function savePhotoCaption(){
+  photos[editPhotoIdx].caption=document.getElementById('photoCaptionEdit').value.trim()||'Güzel bir an';
+  savePhotosToCloud(photos);
+  renderGallery();
+  closePhotoCaptionModal();
+}
+function openLightbox(i){
+  document.getElementById('lightboxImg').src=photos[i].src;
+  document.getElementById('lightboxCaption').textContent=photos[i].caption;
+  document.getElementById('lightbox').classList.add('open');
+}
+function closeLightbox(){document.getElementById('lightbox').classList.remove('open');}
+
+
+// SAYAÇ — seç/kaydet/düzenle
+let counterVal = store.get('ilayda_counter') || 0;
+
+function buildPicker(){
+  const scroll = document.getElementById('pickerScroll');
+  scroll.innerHTML = '';
+  for(let i=0;i<2;i++){
+    const d=document.createElement('div'); d.className='picker-item'; d.style.opacity='0'; scroll.appendChild(d);
+  }
+  for(let i=1;i<=9999;i++){
+    const d=document.createElement('div'); d.className='picker-item'; d.textContent=i; d.dataset.val=i; scroll.appendChild(d);
+  }
+  for(let i=0;i<2;i++){
+    const d=document.createElement('div'); d.className='picker-item'; d.style.opacity='0'; scroll.appendChild(d);
+  }
+  updatePickerHighlight();
+  scroll.addEventListener('scroll', updatePickerHighlight, {passive:true});
+}
+
+function updatePickerHighlight(){
+  const scroll=document.getElementById('pickerScroll');
+  const idx=Math.round(scroll.scrollTop/70);
+  scroll.querySelectorAll('.picker-item[data-val]').forEach((item,i)=>{
+    const diff=Math.abs(i-idx);
+    item.classList.toggle('selected', diff===0);
+    item.classList.toggle('near', diff===1);
+  });
+}
+
+function getPickerVal(){
+  const scroll=document.getElementById('pickerScroll');
+  const idx=Math.round(scroll.scrollTop/70);
+  const items=[...scroll.querySelectorAll('.picker-item[data-val]')];
+  return items[idx]?parseInt(items[idx].dataset.val):1;
+}
+
+function scrollPickerTo(val){
+  const scroll=document.getElementById('pickerScroll');
+  setTimeout(()=>{ scroll.scrollTop=(val-1)*70; updatePickerHighlight(); }, 50);
+}
+
+function saveCounter(){
+  counterVal=getPickerVal();
+  store.set('ilayda_counter', counterVal);
+  showCounterView();
+}
+
+function adjustCounter(delta){
+  counterVal=Math.max(0, Math.min(9999, counterVal+delta));
+  store.set('ilayda_counter', counterVal);
+  document.getElementById('counterDisplay').textContent=counterVal;
+}
+
+function editCounter(){
+  document.getElementById('counterViewMode').style.display='none';
+  document.getElementById('counterPickMode').style.display='block';
+  scrollPickerTo(counterVal||1);
+}
+
+function showCounterView(){
+  document.getElementById('counterPickMode').style.display='none';
+  document.getElementById('counterViewMode').style.display='block';
+  document.getElementById('counterDisplay').textContent=counterVal;
+}
+
+function initCounter(){
+  if(counterVal>0) showCounterView();
+}
+
+// BIRTHDAY CONFETTI
+function isBirthdayToday(){ const n=new Date(); return n.getMonth()===3&&n.getDate()===11; }
+function launchConfetti(){
+  const colors=['#e8748a','#f7c5ce','#b84d63','#ffd700','#ff6b9d','#fff'];
+  const container=document.createElement('div');
+  container.style.cssText='position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:9999;overflow:hidden;';
+  document.body.appendChild(container);
+  for(let i=0;i<120;i++){
+    const piece=document.createElement('div');
+    const size=Math.random()*10+6;
+    piece.style.cssText='position:absolute;width:'+size+'px;height:'+size+'px;background:'+colors[Math.floor(Math.random()*colors.length)]+';border-radius:'+(Math.random()>.5?'50%':'0%')+';left:'+Math.random()*100+'%;top:-20px;animation:confettiFall '+(Math.random()*2+2)+'s '+(Math.random()*2)+'s ease-in forwards;transform:rotate('+Math.random()*360+'deg)';
+    container.appendChild(piece);
+  }
+  const style=document.createElement('style');
+  style.textContent='@keyframes confettiFall{0%{transform:translateY(0) rotate(0deg);opacity:1}100%{transform:translateY(105vh) rotate(720deg);opacity:0}}';
+  document.head.appendChild(style);
+  setTimeout(()=>{ container.remove(); style.remove(); }, 5000);
+}
+
+// INIT
+async function init(){
+  await pullCloud();
+  // Pre-load photos if empty
+  renderEvents(); renderCards(); renderTimeline(); renderManifest(); loadPhotos();
+  buildPicker();
+  initCounter();
+  if(isBirthdayToday()) setTimeout(launchConfetti,800);
+}
+init();
+</script>
+</body>
+</html>
