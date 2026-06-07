@@ -394,19 +394,23 @@ async function refreshPage(name){
 }
 
 // STORAGE + CLOUD SYNC
-// Her iki telefon da aynı sabit BIN_ID'yi kullanır
 const JSONBIN_KEY = '$2a$10$PIe3XWqcFRFaiDOQDJLZFOpHqkIZX2tXbrPQR4Z5nKf7SvjB2f7Su';
-// BIN_ID: ilk pushCloud'da oluşturulur ve kod içine gömülü olarak paylaşılır
-let SHARED_BIN_ID = '69dc0b82856a682189282ba4'; // Sabit — iki telefon da bunu kullanır
+let SHARED_BIN_ID = '69dc0b82856a682189282ba4';
+
+// pullCloud devam ederken pushCloud engellemek için kilit
+let _pullInProgress = false;
 
 const store = {
   get: k => { try{ return JSON.parse(localStorage.getItem(k)||'null'); }catch(e){ return null; } },
   set: (k,v) => {
     try{ localStorage.setItem(k,JSON.stringify(v)); }catch(e){}
+    // pullCloud devam ediyorsa push'u erteleme — veri çakışmasını önler
+    if(_pullInProgress){ store._pendingPush=true; return; }
     clearTimeout(store._t);
-    store._t = setTimeout(pushCloud, 1000);
+    store._t = setTimeout(pushCloud, 1500);
   },
-  _t: null
+  _t: null,
+  _pendingPush: false
 };
 
 function showSync(on){ const el=document.getElementById('syncIndicator'); if(el) el.style.opacity=on?'1':'0'; }
@@ -425,15 +429,18 @@ function getCloudData(){
 
 function applyCloudData(d){
   if(!d) return;
-  if(d.events){localStorage.setItem('ilayda_events',JSON.stringify(d.events));}
-  if(d.cards){localStorage.setItem('ilayda_cards',JSON.stringify(d.cards));}
+  if(d.events && d.events.length>0){localStorage.setItem('ilayda_events',JSON.stringify(d.events));}
+  if(d.cards && d.cards.length>0){localStorage.setItem('ilayda_cards',JSON.stringify(d.cards));}
   if(d.memories){localStorage.setItem('ilayda_memories',JSON.stringify(d.memories));memories=d.memories;}
-  if(d.fixedMemories){localStorage.setItem('ilayda_fixed_memories',JSON.stringify(d.fixedMemories));fixedMemories=d.fixedMemories.map(m=>({...m,fixed:true}));}
+  if(d.fixedMemories && d.fixedMemories.length>0){localStorage.setItem('ilayda_fixed_memories',JSON.stringify(d.fixedMemories));fixedMemories=d.fixedMemories.map(m=>({...m,fixed:true}));}
   if(d.counter!=null){localStorage.setItem('ilayda_counter',JSON.stringify(d.counter));counterVal=d.counter;}
-  if(d.manifests){localStorage.setItem('ilayda_manifests',JSON.stringify(d.manifests));manifests=d.manifests;}
+  if(d.manifests && d.manifests.length>0){localStorage.setItem('ilayda_manifests',JSON.stringify(d.manifests));manifests=d.manifests;}
+  if(d.photos && d.photos.length>0){localStorage.setItem('ilayda_photos',JSON.stringify(d.photos));photos=d.photos;}
 }
 
 async function pushCloud(retry=0){
+  // pullCloud devam ediyorsa bekle
+  if(_pullInProgress){store._pendingPush=true;return;}
   if(pushCloud._busy){pushCloud._pending=true;return;}
   pushCloud._busy=true;
   showSync(true);
@@ -442,14 +449,15 @@ async function pushCloud(retry=0){
     let rec={};
     if(gr.ok){const gj=await gr.json();rec=gj.record||{};}
     const local=getCloudData();
-    rec.events=local.events;
-    rec.cards=local.cards;
-    rec.memories=local.memories;
-    rec.fixedMemories=local.fixedMemories;
-    rec.counter=local.counter;
-    rec.manifests=local.manifests;
+    // Sadece null olmayan değerleri yaz — boş veri cloud'u silmesin
+    if(local.events!=null) rec.events=local.events;
+    if(local.cards!=null) rec.cards=local.cards;
+    if(local.memories!=null) rec.memories=local.memories;
+    if(local.fixedMemories!=null) rec.fixedMemories=local.fixedMemories;
+    if(local.counter!=null) rec.counter=local.counter;
+    if(local.manifests!=null) rec.manifests=local.manifests;
     rec.v=local.v;
-    // rec.photos'a dokunmuyoruz
+    // rec.photos'a dokunmuyoruz — ayrı yönetiliyor
     const r=await fetch('https://api.jsonbin.io/v3/b/'+SHARED_BIN_ID,{
       method:'PUT',headers:{'Content-Type':'application/json','X-Master-Key':JSONBIN_KEY},
       body:JSON.stringify(rec)
@@ -463,26 +471,34 @@ async function pushCloud(retry=0){
 pushCloud._busy=false;pushCloud._pending=false;
 
 async function pullCloud(){
+  if(_pullInProgress) return false;
+  _pullInProgress=true;
   showSync(true);
   try{
     const r = await fetch('https://api.jsonbin.io/v3/b/'+SHARED_BIN_ID+'/latest',{
       headers:{'X-Master-Key':JSONBIN_KEY}
     });
-    if(!r.ok){ showSync(false); return false; }
+    if(!r.ok){ showSync(false); _pullInProgress=false; return false; }
     const j = await r.json();
     applyCloudData(j.record);
     showSync(false);
+    _pullInProgress=false;
+    // pull tamamlandıktan sonra bekleyen push varsa çalıştır
+    if(store._pendingPush){store._pendingPush=false;setTimeout(pushCloud,500);}
     return true;
-  }catch(e){ showSync(false); return false; }
+  }catch(e){
+    showSync(false);
+    _pullInProgress=false;
+    return false;
+  }
 }
+
+// DATA_VERSION migrasyonu: store.set yerine localStorage.setItem kullan
+// — pushCloud tetiklemez, veri sıfırlanmaz
 const DATA_VERSION = '7';
-if(store.get('ilayda_data_version') !== DATA_VERSION){
-  localStorage.removeItem('ilayda_events');
-  localStorage.removeItem('ilayda_cards');
-  localStorage.removeItem('ilayda_memories');
-  localStorage.removeItem('ilayda_fixed_memories');
-  localStorage.removeItem('ilayda_manifests');
-  store.set('ilayda_data_version', DATA_VERSION);
+if(localStorage.getItem('ilayda_data_version') !== JSON.stringify(DATA_VERSION)){
+  // Silme yok — cloud'dan pull edilecek, veri korunacak
+  localStorage.setItem('ilayda_data_version', JSON.stringify(DATA_VERSION));
 }
 
 // LONG PRESS
@@ -1025,24 +1041,31 @@ function launchConfetti(){
   setTimeout(()=>{ container.remove(); style.remove(); }, 5000);
 }
 
+function renderAll(){
+  renderEvents(); renderCards(); renderTimeline(); renderManifest();
+  initCounter();
+  // Galeri aktif sayfadaysa yenile
+  if(document.getElementById('page-gallery').classList.contains('active')) renderGallery();
+}
+
 // INIT
 async function init(){
   await pullCloud();
-  renderEvents(); renderCards(); renderTimeline(); renderManifest(); loadPhotos();
+  renderAll();
+  loadPhotos();
   buildPicker();
-  initCounter();
   if(isBirthdayToday()) setTimeout(launchConfetti,800);
 }
 init();
 
 // Uygulama arka plandan döndüğünde güncel veriyi çek
 document.addEventListener('visibilitychange', async () => {
-  if (!document.hidden) { await pullCloud(); renderEvents(); renderCards(); renderTimeline(); renderManifest(); }
+  if (!document.hidden) { await pullCloud(); renderAll(); loadPhotos(); }
 });
 // Pencere odak aldığında senkron çek
-window.addEventListener('focus', async () => { await pullCloud(); renderEvents(); renderCards(); renderTimeline(); renderManifest(); });
+window.addEventListener('focus', async () => { await pullCloud(); renderAll(); loadPhotos(); });
 // 5 dakikada bir otomatik kontrol
-setInterval(pullCloud, 300000);
+setInterval(async () => { await pullCloud(); renderAll(); }, 300000);
 </script>
 </body>
 </html>
