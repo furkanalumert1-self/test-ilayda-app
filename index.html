@@ -735,7 +735,7 @@ function daysUntil(dateStr){
   const t=new Date(dateStr), n=new Date();
   n.setHours(0,0,0,0); t.setHours(0,0,0,0);
   let d=Math.ceil((t-n)/86400000);
-  if(d<0){ t.setFullYear(t.getFullYear()+1); d=Math.ceil((t-n)/86400000); }
+  while(d<0){ t.setFullYear(t.getFullYear()+1); d=Math.ceil((t-n)/86400000); }
   return d;
 }
 function renderEvents(){
