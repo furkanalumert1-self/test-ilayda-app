@@ -25,8 +25,13 @@ nav{position:fixed;bottom:0;left:0;right:0;background:rgba(255,255,255,.95);back
 .nav-btn .icon{font-size:20px}
 .page{display:none;min-height:100vh;padding:0 0 90px;position:relative;z-index:1}
 .page.active{display:block}
-@keyframes fadeIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
-.page.active>*{animation:fadeIn .35s ease forwards}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.page.active>*{animation:fadeIn .18s ease forwards}
+/* SORT MODE */
+.sort-btn{background:none;border:2px solid var(--blush);color:var(--rose);border-radius:50%;width:32px;height:32px;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .2s;margin-right:4px}
+.sort-btn.active{background:var(--rose);border-color:var(--rose);color:white;box-shadow:0 2px 10px rgba(232,116,138,.4)}
+.drag-handle{width:28px;height:28px;flex-shrink:0;display:flex;align-items:center;justify-content:center;color:var(--blush);font-size:20px;cursor:grab;touch-action:none;-webkit-touch-callout:none}
+.sortable-ghost{opacity:0.35;transform:scale(.97)}
 /* HOME */
 .home-header{background:linear-gradient(160deg,#fce4ec 0%,#f8bbd0 50%,#fce4ec 100%);padding:60px 24px 50px;text-align:center;position:relative;overflow:hidden}
 .home-header::before{content:'';position:absolute;top:-50%;left:-50%;width:200%;height:200%;background:radial-gradient(circle at 30% 40%,rgba(255,255,255,.4) 0%,transparent 50%),radial-gradient(circle at 70% 60%,rgba(232,116,138,.15) 0%,transparent 50%)}
@@ -184,7 +189,10 @@ nav{position:fixed;bottom:0;left:0;right:0;background:rgba(255,255,255,.95);back
   <div class="section">
     <h2 class="section-title">
       <span>🗓 Yaklaşan Günler</span>
-      <button class="add-btn" onclick="openEventModal()">+</button>
+      <span style="display:flex;align-items:center;gap:6px">
+        <button class="sort-btn" id="eventSortBtn" onclick="toggleSort('event')" title="Sırala">↕︎</button>
+        <button class="add-btn" onclick="openEventModal()">+</button>
+      </span>
     </h2>
     <div id="eventsContainer"></div>
   </div>
@@ -194,25 +202,30 @@ nav{position:fixed;bottom:0;left:0;right:0;background:rgba(255,255,255,.95);back
 <div class="page" id="page-cards">
   <div class="page-header" style="position:relative">
     <h1>İlayda Hakkında</h1>
-    <button class="add-btn" onclick="openNewCardModal()" style="position:absolute;right:20px;top:50%;transform:translateY(-50%)">+</button>
+    <span style="position:absolute;right:20px;top:50%;transform:translateY(-50%);display:flex;gap:6px">
+      <button class="sort-btn" id="cardSortBtn" onclick="toggleSort('card')" title="Sırala">↕︎</button>
+      <button class="add-btn" onclick="openNewCardModal()">+</button>
+    </span>
   </div>
   <div class="cards-grid" id="cardsGrid"></div>
 </div>
 
 <!-- GALERİ -->
 <div class="page" id="page-gallery">
-  <div class="gallery-header">
+  <div class="gallery-header" style="position:relative">
     <h1 style="font-family:'Playfair Display',serif;font-style:italic;font-size:26px;color:var(--deep)">Anılarımız</h1>
+    <button class="sort-btn" id="gallerySortBtn" onclick="toggleSort('gallery')" title="Sırala" style="position:absolute;right:20px;top:50%;transform:translateY(-50%)">↕︎</button>
   </div>
   <div class="gallery-grid" id="galleryGrid"></div>
-  <p class="upload-hint">Uzun bas → düzenle/sil &nbsp;|&nbsp; + ile ekle</p>
+  <p class="upload-hint">Uzun bas → düzenle/sil &nbsp;|&nbsp; ⇅ → sırala</p>
   <button class="add-memory-btn" onclick="openGalleryUpload()">+ Fotoğraf Ekle</button>
 </div>
 
 <!-- ZAMAN -->
 <div class="page" id="page-timeline">
-  <div class="page-header" style="display:flex;flex-direction:column;align-items:center">
+  <div class="page-header" style="display:flex;flex-direction:column;align-items:center;position:relative">
     <h1 style="font-family:'Playfair Display',serif;font-style:italic;font-size:26px;color:var(--deep)">Zaman Tüneli</h1>
+    <button class="sort-btn" id="timelineSortBtn" onclick="toggleSort('timeline')" title="Sırala" style="position:absolute;right:20px;top:50%;transform:translateY(-50%)">↕︎</button>
   </div>
   <div class="timeline-container">
     <div class="timeline-line"></div>
@@ -260,7 +273,10 @@ nav{position:fixed;bottom:0;left:0;right:0;background:rgba(255,255,255,.95);back
 <div class="page" id="page-manifest">
   <div class="page-header" style="position:relative">
     <h1>Manifest</h1>
-    <button class="add-btn" onclick="openManifestModal()" style="position:absolute;right:20px;top:50%;transform:translateY(-50%)">+</button>
+    <span style="position:absolute;right:20px;top:50%;transform:translateY(-50%);display:flex;gap:6px">
+      <button class="sort-btn" id="manifestSortBtn" onclick="toggleSort('manifest')" title="Sırala">↕︎</button>
+      <button class="add-btn" onclick="openManifestModal()">+</button>
+    </span>
   </div>
   <div id="manifestList" style="padding:16px 20px 0"></div>
 </div>
@@ -378,8 +394,8 @@ function showPage(name, btn){
   document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
   document.getElementById('page-'+name).classList.add('active');
   btn.classList.add('active');
-  if(name==='gallery') loadPhotos();
-  else refreshPage(name);
+  // Galeri: önce local photos ile anında göster, sonra cloud'dan güncelle
+  if(name==='gallery'){ renderGallery(); loadPhotos(); }
 }
 async function refreshPage(name){
   try{
@@ -395,19 +411,23 @@ async function refreshPage(name){
 }
 
 // STORAGE + CLOUD SYNC
-// Her iki telefon da aynı sabit BIN_ID'yi kullanır
 const JSONBIN_KEY = '$2a$10$PIe3XWqcFRFaiDOQDJLZFOpHqkIZX2tXbrPQR4Z5nKf7SvjB2f7Su';
-// BIN_ID: ilk pushCloud'da oluşturulur ve kod içine gömülü olarak paylaşılır
-let SHARED_BIN_ID = '69dc0b82856a682189282ba4'; // Sabit — iki telefon da bunu kullanır
+let SHARED_BIN_ID = '69dc0b82856a682189282ba4';
+
+// pullCloud devam ederken pushCloud engellemek için kilit
+let _pullInProgress = false;
 
 const store = {
   get: k => { try{ return JSON.parse(localStorage.getItem(k)||'null'); }catch(e){ return null; } },
   set: (k,v) => {
     try{ localStorage.setItem(k,JSON.stringify(v)); }catch(e){}
+    // pullCloud devam ediyorsa push'u erteleme — veri çakışmasını önler
+    if(_pullInProgress){ store._pendingPush=true; return; }
     clearTimeout(store._t);
-    store._t = setTimeout(pushCloud, 1000);
+    store._t = setTimeout(pushCloud, 1500);
   },
-  _t: null
+  _t: null,
+  _pendingPush: false
 };
 
 function showSync(on){ const el=document.getElementById('syncIndicator'); if(el) el.style.opacity=on?'1':'0'; }
@@ -426,15 +446,18 @@ function getCloudData(){
 
 function applyCloudData(d){
   if(!d) return;
-  if(d.events){localStorage.setItem('ilayda_events',JSON.stringify(d.events));}
-  if(d.cards){localStorage.setItem('ilayda_cards',JSON.stringify(d.cards));}
+  if(d.events && d.events.length>0){localStorage.setItem('ilayda_events',JSON.stringify(d.events));}
+  if(d.cards && d.cards.length>0){localStorage.setItem('ilayda_cards',JSON.stringify(d.cards));}
   if(d.memories){localStorage.setItem('ilayda_memories',JSON.stringify(d.memories));memories=d.memories;}
-  if(d.fixedMemories){localStorage.setItem('ilayda_fixed_memories',JSON.stringify(d.fixedMemories));fixedMemories=d.fixedMemories.map(m=>({...m,fixed:true}));}
+  if(d.fixedMemories && d.fixedMemories.length>0){localStorage.setItem('ilayda_fixed_memories',JSON.stringify(d.fixedMemories));fixedMemories=d.fixedMemories.map(m=>({...m,fixed:true}));}
   if(d.counter!=null){localStorage.setItem('ilayda_counter',JSON.stringify(d.counter));counterVal=d.counter;}
-  if(d.manifests){localStorage.setItem('ilayda_manifests',JSON.stringify(d.manifests));manifests=d.manifests;}
+  if(d.manifests && d.manifests.length>0){localStorage.setItem('ilayda_manifests',JSON.stringify(d.manifests));manifests=d.manifests;}
+  if(d.photos && d.photos.length>0){localStorage.setItem('ilayda_photos',JSON.stringify(d.photos));photos=d.photos;}
 }
 
 async function pushCloud(retry=0){
+  // pullCloud devam ediyorsa bekle
+  if(_pullInProgress){store._pendingPush=true;return;}
   if(pushCloud._busy){pushCloud._pending=true;return;}
   pushCloud._busy=true;
   showSync(true);
@@ -443,14 +466,15 @@ async function pushCloud(retry=0){
     let rec={};
     if(gr.ok){const gj=await gr.json();rec=gj.record||{};}
     const local=getCloudData();
-    rec.events=local.events;
-    rec.cards=local.cards;
-    rec.memories=local.memories;
-    rec.fixedMemories=local.fixedMemories;
-    rec.counter=local.counter;
-    rec.manifests=local.manifests;
+    // Sadece null olmayan değerleri yaz — boş veri cloud'u silmesin
+    if(local.events!=null) rec.events=local.events;
+    if(local.cards!=null) rec.cards=local.cards;
+    if(local.memories!=null) rec.memories=local.memories;
+    if(local.fixedMemories!=null) rec.fixedMemories=local.fixedMemories;
+    if(local.counter!=null) rec.counter=local.counter;
+    if(local.manifests!=null) rec.manifests=local.manifests;
     rec.v=local.v;
-    // rec.photos'a dokunmuyoruz
+    // rec.photos'a dokunmuyoruz — ayrı yönetiliyor
     const r=await fetch('https://api.jsonbin.io/v3/b/'+SHARED_BIN_ID,{
       method:'PUT',headers:{'Content-Type':'application/json','X-Master-Key':JSONBIN_KEY},
       body:JSON.stringify(rec)
@@ -464,27 +488,90 @@ async function pushCloud(retry=0){
 pushCloud._busy=false;pushCloud._pending=false;
 
 async function pullCloud(){
+  if(_pullInProgress) return false;
+  _pullInProgress=true;
   showSync(true);
   try{
     const r = await fetch('https://api.jsonbin.io/v3/b/'+SHARED_BIN_ID+'/latest',{
       headers:{'X-Master-Key':JSONBIN_KEY}
     });
-    if(!r.ok){ showSync(false); return false; }
+    if(!r.ok){ showSync(false); _pullInProgress=false; return false; }
     const j = await r.json();
     applyCloudData(j.record);
     showSync(false);
+    _pullInProgress=false;
+    // pull tamamlandıktan sonra bekleyen push varsa çalıştır
+    if(store._pendingPush){store._pendingPush=false;setTimeout(pushCloud,500);}
     return true;
-  }catch(e){ showSync(false); return false; }
+  }catch(e){
+    showSync(false);
+    _pullInProgress=false;
+    return false;
+  }
 }
+
+// DATA_VERSION migrasyonu: store.set yerine localStorage.setItem kullan
+// — pushCloud tetiklemez, veri sıfırlanmaz
 const DATA_VERSION = '7';
-if(store.get('ilayda_data_version') !== DATA_VERSION){
-  localStorage.removeItem('ilayda_events');
-  localStorage.removeItem('ilayda_cards');
-  localStorage.removeItem('ilayda_memories');
-  localStorage.removeItem('ilayda_fixed_memories');
-  localStorage.removeItem('ilayda_manifests');
-  store.set('ilayda_data_version', DATA_VERSION);
+if(localStorage.getItem('ilayda_data_version') !== JSON.stringify(DATA_VERSION)){
+  // Silme yok — cloud'dan pull edilecek, veri korunacak
+  localStorage.setItem('ilayda_data_version', JSON.stringify(DATA_VERSION));
 }
+
+// SORT MODE STATE
+const sortMode = {event:false, card:false, gallery:false, timeline:false, manifest:false};
+
+function toggleSort(type){
+  sortMode[type] = !sortMode[type];
+  const btn = document.getElementById(type+'SortBtn') ||
+              document.getElementById(({event:'event',card:'card',gallery:'gallery',timeline:'timeline',manifest:'manifest'}[type])+'SortBtn');
+  if(btn) btn.classList.toggle('active', sortMode[type]);
+  if(type==='event') renderEvents();
+  else if(type==='card') renderCards();
+  else if(type==='gallery') renderGallery();
+  else if(type==='timeline') renderTimeline();
+  else if(type==='manifest') renderManifest();
+}
+
+// DRAG SORT ENGINE
+let _drag = {el:null, container:null, onEnd:null};
+
+function setupDrag(handle, item, idx, container, onEnd){
+  handle.addEventListener('touchstart', e=>{
+    e.stopPropagation();
+    _drag.el = item;
+    _drag.container = container;
+    _drag.onEnd = onEnd;
+    item.classList.add('sortable-ghost');
+    navigator.vibrate&&navigator.vibrate(25);
+  },{passive:true});
+}
+
+document.addEventListener('touchmove', e=>{
+  if(!_drag.el) return;
+  e.preventDefault();
+  const touch = e.touches[0];
+  _drag.el.style.visibility='hidden';
+  const under = document.elementFromPoint(touch.clientX, touch.clientY);
+  _drag.el.style.visibility='';
+  if(!under) return;
+  const target = under.closest('[data-sidx]');
+  if(target && target !== _drag.el && _drag.container.contains(target)){
+    const items = [..._drag.container.querySelectorAll('[data-sidx]')];
+    const di = items.indexOf(_drag.el);
+    const ti = items.indexOf(target);
+    if(di < ti) _drag.container.insertBefore(target, _drag.el);
+    else _drag.container.insertBefore(_drag.el, target);
+  }
+},{passive:false});
+
+document.addEventListener('touchend', ()=>{
+  if(!_drag.el) return;
+  _drag.el.classList.remove('sortable-ghost');
+  const newOrder = [..._drag.container.querySelectorAll('[data-sidx]')].map(el=>parseInt(el.dataset.sidx));
+  _drag.onEnd(newOrder);
+  _drag.el = null;
+});
 
 // LONG PRESS
 function addLongPress(el, cb){
@@ -577,11 +664,24 @@ function renderManifest(){
   manifests.forEach((m,i)=>{
     const item=document.createElement('div');
     item.className='manifest-item'+(m.done?' done':'');
-    item.innerHTML=
-      '<span class="manifest-emoji">'+(m.emoji||'✨')+'</span>'+
-      '<span class="manifest-text">'+m.text+'</span>'+
-      '<div class="manifest-check'+(m.done?' checked':'')+'" onclick="toggleManifest('+i+')">'+(m.done?'✓':'')+'</div>';
-    addLongPress(item, e=>openCtxMenu(e,'manifest',i));
+    item.dataset.sidx=i;
+    if(sortMode.manifest){
+      const h=document.createElement('span'); h.className='drag-handle'; h.textContent='⋮⋮';
+      item.appendChild(h);
+      item.insertAdjacentHTML('beforeend',
+        '<span class="manifest-emoji">'+(m.emoji||'✨')+'</span>'+
+        '<span class="manifest-text">'+m.text+'</span>');
+      setupDrag(h, item, i, list, order=>{
+        manifests=order.map(j=>manifests[j]);
+        store.set('ilayda_manifests',manifests); renderManifest();
+      });
+    } else {
+      item.innerHTML=
+        '<span class="manifest-emoji">'+(m.emoji||'✨')+'</span>'+
+        '<span class="manifest-text">'+m.text+'</span>'+
+        '<div class="manifest-check'+(m.done?' checked':'')+'" onclick="toggleManifest('+i+')">'+(m.done?'✓':'')+'</div>';
+      addLongPress(item, e=>openCtxMenu(e,'manifest',i));
+    }
     list.appendChild(item);
   });
 }
@@ -635,7 +735,7 @@ function daysUntil(dateStr){
   const t=new Date(dateStr), n=new Date();
   n.setHours(0,0,0,0); t.setHours(0,0,0,0);
   let d=Math.ceil((t-n)/86400000);
-  if(d<0){ t.setFullYear(t.getFullYear()+1); d=Math.ceil((t-n)/86400000); }
+  while(d<0){ t.setFullYear(t.getFullYear()+1); d=Math.ceil((t-n)/86400000); }
   return d;
 }
 function renderEvents(){
@@ -654,8 +754,24 @@ function renderEvents(){
       : new Date(ev.date).toLocaleDateString('tr-TR',{day:'numeric',month:'long',year:'numeric'});
     const card=document.createElement('div');
     card.className='event-card';
-    card.innerHTML='<span class="event-emoji">'+ev.emoji+'</span><div class="event-info"><div class="event-name">'+ev.name+'</div><div class="event-date">'+dateLabel+'</div></div><div class="event-countdown"><span class="days">'+days+'</span><span>gün</span></div>';
-    addLongPress(card, e=>openCtxMenu(e,'event',i));
+    card.dataset.sidx=i;
+    if(sortMode.event){
+      const handle=document.createElement('span');
+      handle.className='drag-handle';handle.textContent='⋮⋮';
+      card.appendChild(handle);
+      card.innerHTML+='<span class="event-emoji">'+ev.emoji+'</span><div class="event-info"><div class="event-name">'+ev.name+'</div><div class="event-date">'+dateLabel+'</div></div><div class="event-countdown"><span class="days">'+days+'</span><span>gün</span></div>';
+      // rebuild to get handle first
+      card.innerHTML='';
+      const h=document.createElement('span'); h.className='drag-handle'; h.textContent='⋮⋮'; card.appendChild(h);
+      card.insertAdjacentHTML('beforeend','<span class="event-emoji">'+ev.emoji+'</span><div class="event-info"><div class="event-name">'+ev.name+'</div><div class="event-date">'+dateLabel+'</div></div><div class="event-countdown"><span class="days">'+days+'</span><span>gün</span></div>');
+      setupDrag(h, card, i, container, order=>{
+        const evs2=getEvents(); const newArr=order.map(j=>evs2[j]);
+        store.set('ilayda_events',newArr); renderEvents();
+      });
+    } else {
+      card.innerHTML='<span class="event-emoji">'+ev.emoji+'</span><div class="event-info"><div class="event-name">'+ev.name+'</div><div class="event-date">'+dateLabel+'</div></div><div class="event-countdown"><span class="days">'+days+'</span><span>gün</span></div>';
+      addLongPress(card, e=>openCtxMenu(e,'event',i));
+    }
     container.appendChild(card);
   });
 }
@@ -671,8 +787,8 @@ function closeEventModal(){ document.getElementById('eventModal').classList.remo
 function saveEvent(){
   const emoji=document.getElementById('eventEmoji').value.trim()||'📅';
   const name=document.getElementById('eventName').value.trim();
-  const date=document.getElementById('eventDate').value;
-  if(!name||!date) return;
+  const date=document.getElementById('eventDate').value||new Date().toISOString().split('T')[0];
+  if(!name) return;
   const evs=getEvents();
   if(editEventIdx!==null) evs[editEventIdx]={emoji,name,date};
   else evs.push({emoji,name,date});
@@ -697,11 +813,25 @@ function renderCards(){
   const cards=getCards();
   const grid=document.getElementById('cardsGrid');
   grid.innerHTML='';
+  // Sort modunda single-column liste, normal modda 2-col grid
+  grid.style.gridTemplateColumns = sortMode.card ? '1fr' : '1fr 1fr';
   cards.forEach((c,i)=>{
     const div=document.createElement('div');
-    div.className='info-card '+c.cls;
-    div.innerHTML='<span class="card-icon">'+c.icon+'</span><div class="card-label">'+c.label+'</div><div class="card-value">'+c.value+'</div>';
-    addLongPress(div, e=>openCtxMenu(e,'card',i));
+    div.className='info-card '+(sortMode.card?'':c.cls);
+    div.dataset.sidx=i;
+    if(sortMode.card){
+      div.style.cssText='display:flex;align-items:center;gap:12px;text-align:left;padding:14px 16px';
+      const h=document.createElement('span'); h.className='drag-handle'; h.textContent='⋮⋮';
+      div.appendChild(h);
+      div.insertAdjacentHTML('beforeend','<span style="font-size:22px">'+c.icon+'</span><div style="flex:1"><div style="font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--soft)">'+c.label+'</div><div style="font-size:14px;color:var(--text)">'+c.value+'</div></div>');
+      setupDrag(h, div, i, grid, order=>{
+        const cards2=getCards(); const newArr=order.map(j=>cards2[j]);
+        store.set('ilayda_cards',newArr); renderCards();
+      });
+    } else {
+      div.innerHTML='<span class="card-icon">'+c.icon+'</span><div class="card-label">'+c.label+'</div><div class="card-value">'+c.value+'</div>';
+      addLongPress(div, e=>openCtxMenu(e,'card',i));
+    }
     grid.appendChild(div);
   });
 }
@@ -757,8 +887,23 @@ function renderTimeline(){
   allMemories.forEach((m,i)=>{
     const item=document.createElement('div');
     item.className='timeline-item';
-    item.innerHTML='<div class="timeline-dot"></div><div class="timeline-content"><div class="timeline-date">'+m.date+'</div><div class="timeline-title">'+m.title+'</div>'+(m.desc?'<div class="timeline-desc">'+m.desc+'</div>':'')+'</div>';
-    addLongPress(item, e=>openCtxMenu(e,'memory',i));
+    item.dataset.sidx=i;
+    if(sortMode.timeline){
+      const h=document.createElement('span'); h.className='drag-handle'; h.textContent='⋮⋮'; h.style.marginLeft='4px';
+      item.appendChild(h);
+      item.insertAdjacentHTML('beforeend','<div class="timeline-dot"></div><div class="timeline-content"><div class="timeline-date">'+m.date+'</div><div class="timeline-title">'+m.title+'</div>'+(m.desc?'<div class="timeline-desc">'+m.desc+'</div>':'')+'</div>');
+      setupDrag(h, item, i, container, order=>{
+        const combined=order.map(j=>allMemories[j]);
+        fixedMemories.length=0; combined.filter(x=>x.fixed).forEach(x=>fixedMemories.push(x));
+        memories=combined.filter(x=>!x.fixed);
+        store.set('ilayda_memories',memories);
+        store.set('ilayda_fixed_memories',fixedMemories.map(x=>({...x})));
+        renderTimeline();
+      });
+    } else {
+      item.innerHTML='<div class="timeline-dot"></div><div class="timeline-content"><div class="timeline-date">'+m.date+'</div><div class="timeline-title">'+m.title+'</div>'+(m.desc?'<div class="timeline-desc">'+m.desc+'</div>':'')+'</div>';
+      addLongPress(item, e=>openCtxMenu(e,'memory',i));
+    }
     container.appendChild(item);
   });
 }
@@ -858,6 +1003,8 @@ function renderGallery(){
   const grid=document.getElementById('galleryGrid');
   if(!grid) return;
   grid.innerHTML='';
+  // Sort modunda tek kolon liste
+  grid.style.gridTemplateColumns = sortMode.gallery ? '1fr' : '1fr 1fr';
   if(photos.length===0){
     const e=document.createElement('div');
     e.style.cssText='grid-column:span 2;text-align:center;padding:40px 20px;color:var(--soft);font-size:13px;';
@@ -866,18 +1013,33 @@ function renderGallery(){
   }
   photos.forEach((p,i)=>{
     const item=document.createElement('div');
-    item.className='gallery-item';
-    item.innerHTML='<img src="'+p.src+'" loading="lazy"><div class="cap-overlay"><span class="cap-text">'+p.caption+'</span></div>';
-    let lp=false;
-    addLongPress(item,e2=>{lp=true;setTimeout(()=>lp=false,400);openCtxMenu(e2,'photo',i);});
-    item.addEventListener('click',()=>{if(!lp)openLightbox(i);});
+    item.dataset.sidx=i;
+    if(sortMode.gallery){
+      item.className='gallery-item';
+      item.style.cssText='aspect-ratio:unset;height:72px;border-radius:12px;display:flex;align-items:center;gap:10px;padding:0 10px;background:white;box-shadow:0 2px 12px rgba(232,116,138,.1)';
+      const h=document.createElement('span'); h.className='drag-handle'; h.textContent='⋮⋮';
+      item.appendChild(h);
+      item.insertAdjacentHTML('beforeend','<img src="'+p.src+'" style="width:48px;height:48px;object-fit:cover;border-radius:8px;pointer-events:none"><span style="font-size:12px;color:var(--text);flex:1">'+p.caption+'</span>');
+      setupDrag(h, item, i, grid, order=>{
+        photos=order.map(j=>photos[j]);
+        savePhotosToCloud(photos); renderGallery();
+      });
+    } else {
+      item.className='gallery-item';
+      item.innerHTML='<img src="'+p.src+'" loading="lazy"><div class="cap-overlay"><span class="cap-text">'+p.caption+'</span></div>';
+      let lp=false;
+      addLongPress(item,e2=>{lp=true;setTimeout(()=>lp=false,400);openCtxMenu(e2,'photo',i);});
+      item.addEventListener('click',()=>{if(!lp)openLightbox(i);});
+    }
     grid.appendChild(item);
   });
-  const ph=document.createElement('div');
-  ph.className='gallery-placeholder';
-  ph.innerHTML='<span class="plus">+</span><span>Fotoğraf Ekle</span>';
-  ph.onclick=openGalleryUpload;
-  grid.appendChild(ph);
+  if(!sortMode.gallery){
+    const ph=document.createElement('div');
+    ph.className='gallery-placeholder';
+    ph.innerHTML='<span class="plus">+</span><span>Fotoğraf Ekle</span>';
+    ph.onclick=openGalleryUpload;
+    grid.appendChild(ph);
+  }
 }
 
 function openGalleryUpload(){
@@ -1026,16 +1188,31 @@ function launchConfetti(){
   setTimeout(()=>{ container.remove(); style.remove(); }, 5000);
 }
 
+function renderAll(){
+  renderEvents(); renderCards(); renderTimeline(); renderManifest();
+  initCounter();
+  // Galeri aktif sayfadaysa yenile
+  if(document.getElementById('page-gallery').classList.contains('active')) renderGallery();
+}
+
 // INIT
 async function init(){
   await pullCloud();
-  // Pre-load photos if empty
-  renderEvents(); renderCards(); renderTimeline(); renderManifest(); loadPhotos();
+  renderAll();
+  loadPhotos();
   buildPicker();
-  initCounter();
   if(isBirthdayToday()) setTimeout(launchConfetti,800);
 }
 init();
+
+// Uygulama arka plandan döndüğünde güncel veriyi çek
+document.addEventListener('visibilitychange', async () => {
+  if (!document.hidden) { await pullCloud(); renderAll(); loadPhotos(); }
+});
+// Pencere odak aldığında senkron çek
+window.addEventListener('focus', async () => { await pullCloud(); renderAll(); loadPhotos(); });
+// 5 dakikada bir otomatik kontrol
+setInterval(async () => { await pullCloud(); renderAll(); }, 300000);
 </script>
 </body>
 </html>
