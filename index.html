@@ -787,8 +787,8 @@ function closeEventModal(){ document.getElementById('eventModal').classList.remo
 function saveEvent(){
   const emoji=document.getElementById('eventEmoji').value.trim()||'📅';
   const name=document.getElementById('eventName').value.trim();
-  const date=document.getElementById('eventDate').value;
-  if(!name||!date) return;
+  const date=document.getElementById('eventDate').value||new Date().toISOString().split('T')[0];
+  if(!name) return;
   const evs=getEvents();
   if(editEventIdx!==null) evs[editEventIdx]={emoji,name,date};
   else evs.push({emoji,name,date});
